@@ -4,9 +4,10 @@ import fs from 'fs';
 import express from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
+import path from 'path';
 
 const app = express();
-const port = 5000;
+const port = 3000;
 
 app.use(bodyParser.json());
 app.use(express.json());
@@ -46,6 +47,10 @@ app.post('/api/get-palette', async (req, res) => {
 
   fs.unlink(filePath, err => console.log('File remove error => ', err));
 });
+
+app.get('/', async (req, res) => {
+  res.sendFile(path.join(__dirname, '../build/index.html'))
+})
 
 app.listen(port, () => console.log('Server listen on port ' + port));
 
