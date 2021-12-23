@@ -17,6 +17,7 @@ function App() {
   const [requestError, setRequestError] = useState(null)
   const [brandUrl, setBrandUrl] = useState('https://facebook.com')
   const [selectedColor, setSelectedColor] = useState(null)
+  const [loading, setLoading] = useState(false)
 
   const handleInputChange = (e) => {
     setRequestError(null)
@@ -36,8 +37,9 @@ function App() {
     }
   }
   const fetchBrandPaletteByUrl = async () => {
+    setLoading(true)
     axios.post(
-      'https://mural-palette-extention.tk.frge.io/api/get-palette',
+      `${window.location.origin}/api/get-palette`,
       { brandUrl },
       {
         headers:{ 'Content-Type': 'application/json' }
@@ -46,10 +48,12 @@ function App() {
         (res) => {
           const data = res?.data
           if (data) setBrandPalette(data)
+          setLoading(false)
         },
         (err) => {
           const message = err?.response?.data?.message
           setRequestError(message || null)
+          setLoading(false)
         }
       )
   }
@@ -59,7 +63,7 @@ function App() {
       <h2>Enter the website url to get the brand palette</h2>
       <input className={'app-input'} onChange={handleInputChange} onKeyDown={handleInputKeyDown} defaultValue={brandUrl} />
       <div className={'app-request-error-message'} data-visible={!!requestError}>{requestError}</div>
-      <button disabled={!!requestError || !brandUrl} onClick={fetchBrandPaletteByUrl}>Get palette</button>
+      <button disabled={!!requestError || !brandUrl || loading} onClick={fetchBrandPaletteByUrl}>{loading ? 'Loading...' : 'Get palette'}</button>
       <ul className={'app-palette-color-list'}>
         {brandPalette.map(color => {
           const hexColor = fromRGBToHex(color)

@@ -5,6 +5,9 @@ import express from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
 import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const app = express();
 const port = 3000;
@@ -16,6 +19,7 @@ app.use(cors({
   optionsSuccessStatus: 200,
   credentials: true,
 }));
+app.use('/static', express.static(path.resolve(__dirname, '../build/static')));
 
 
 app.post('/api/get-palette', async (req, res) => {
@@ -49,8 +53,9 @@ app.post('/api/get-palette', async (req, res) => {
 });
 
 app.get('/', async (req, res) => {
-  res.sendFile(path.join(__dirname, '../build/index.html'))
-})
+  const rootHtmlPath = path.resolve(__dirname, '../build/index.html')
+  res.sendFile(rootHtmlPath);
+});
 
 app.listen(port, () => console.log('Server listen on port ' + port));
 
