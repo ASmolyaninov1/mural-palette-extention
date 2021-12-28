@@ -1,6 +1,8 @@
 const express = require('express');
 const { default: ParseServer } = require('parse-server');
 
+console.log('<== check ==>')
+
 const parseConfig = {
   appId: '6e66d7ca36d7c271801bdada14bc9490',
   masterKey: '2d8fcc6094438a0246358cf8142e00d3',
