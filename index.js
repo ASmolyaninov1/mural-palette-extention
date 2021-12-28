@@ -1,5 +1,6 @@
 const express = require('express');
 const { default: ParseServer } = require('parse-server');
+const http = require('http');
 
 console.log('<== check ==>')
 
@@ -18,3 +19,10 @@ module.exports.URL_SITE = 'mural-palette-extention.tk.getforge.io';
 const parseServer = new ParseServer(parseConfig);
 const app = new express();
 app.use('/parse', parseServer.app);
+
+const httpServer = http.createServer(app);
+httpServer.listen(1337, async () => {
+  console.log(`Chisel Parse server v} running on port.`);
+});
+
+const lqServer = ParseServer.createLiveQueryServer(httpServer);
