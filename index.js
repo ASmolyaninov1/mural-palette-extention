@@ -12,6 +12,6 @@ const api = new ParseServer({
 
 app.use('/parse', api);
 
-app.listen(1337, function() {
+app.listen(40123, function() {
   console.log('parse server running on port 1337.')
 })
