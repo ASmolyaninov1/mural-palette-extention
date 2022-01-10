@@ -3,6 +3,8 @@ const { ParseServer } = require('@nessi/parse-server');
 const Parse = require('parse/node');
 const app = express();
 
+console.log('<================ check =========>')
+
 const api = new ParseServer({
   cloud: './cloud',
   appId: '6e66d7ca36d7c271801bdada14bc9490',
