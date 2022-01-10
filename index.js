@@ -7,7 +7,7 @@ const api = new ParseServer({
   cloud: './cloud',
   appId: '6e66d7ca36d7c271801bdada14bc9490',
   masterKey: '2d8fcc6094438a0246358cf8142e00d3',
-  serverURL: 'https://localhost:1337/parse'
+  serverURL: 'https://dockerhost.forge-parse-server.c66.me:40123/parse'
 })
 
 app.use('/parse', api);
