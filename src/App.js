@@ -1,6 +1,7 @@
 import axios from "axios"
 import { useState } from "react"
 import './App.css'
+import ColorThief from 'color-thief-browser'
 
 const fromRGBToHex = ([ r, g, b ]) => {
   return [r, g, b].reduce((acc, el) => {
@@ -11,6 +12,15 @@ const fromRGBToHex = ([ r, g, b ]) => {
     return acc + hex
   }, '#')
 }
+function _arrayBufferToBase64(buffer) {
+  let binary = ''
+  let bytes = new Uint8Array(buffer)
+  let len = bytes.byteLength
+  for (let i = 0; i < len; i++) {
+    binary += String.fromCharCode(bytes[i])
+  }
+  return window.btoa(binary)
+}
 
 function App() {
   const [brandPalette, setBrandPalette] = useState([])
@@ -19,6 +29,11 @@ function App() {
   const [selectedColor, setSelectedColor] = useState(null)
   const [loading, setLoading] = useState(false)
 
+  function catchColor() {
+    const colorThief = new ColorThief()
+    const palette = colorThief.getPalette(this, 10)
+    setBrandPalette(palette)
+  }
   const handleInputChange = (e) => {
     setRequestError(null)
     setBrandUrl(e.currentTarget.value)
@@ -36,26 +51,17 @@ function App() {
       fetchBrandPaletteByUrl()
     }
   }
-  const fetchBrandPaletteByUrl = async () => {
+  const fetchBrandPaletteByUrl = () => {
     setLoading(true)
-    axios.post(
-      `${window.location.origin}/api/get-palette`,
-      { brandUrl },
-      {
-        headers:{ 'Content-Type': 'application/json' }
+    axios.get('https://api.apiflash.com/v1/urltoimage?access_key=b1cbdbf2aeec479f866b6ae4b35296ac&url=' + brandUrl, { responseType: 'arraybuffer' })
+      .then(res => {
+        const image = _arrayBufferToBase64(res.data)
+
+        const baseImage = new Image()
+        baseImage.src = 'data:image/png;base64,' + image
+        baseImage.onload = catchColor
+        setLoading(false)
       })
-      .then(
-        (res) => {
-          const data = res?.data
-          if (data) setBrandPalette(data)
-          setLoading(false)
-        },
-        (err) => {
-          const message = err?.response?.data?.message
-          setRequestError(message || null)
-          setLoading(false)
-        }
-      )
   }
 
   return (
