@@ -12,15 +12,6 @@ const fromRGBToHex = ([ r, g, b ]) => {
     return acc + hex
   }, '#')
 }
-function _arrayBufferToBase64(buffer) {
-  let binary = ''
-  let bytes = new Uint8Array(buffer)
-  let len = bytes.byteLength
-  for (let i = 0; i < len; i++) {
-    binary += String.fromCharCode(bytes[i])
-  }
-  return window.btoa(binary)
-}
 
 function App() {
   const [brandPalette, setBrandPalette] = useState([])
@@ -35,13 +26,16 @@ function App() {
     setBrandPalette(palette)
   }
   const handleInputChange = (e) => {
+    console.log(e.target.selectionStart)
     setRequestError(null)
     setBrandUrl(e.currentTarget.value)
   }
   const handleSelectColor = (color) => async () => {
     const selectedWidgetsList = await window.muralSdk.selectionSdk.list()
     if (selectedWidgetsList.length) {
-      await window.muralSdk.widgets.set.background.color(selectedWidgetsList[0].id, color)
+      selectedWidgetsList.forEach(selectedWidget => {
+        window.muralSdk.widgets.set.background.color(selectedWidget.id, color)
+      })
     }
     setSelectedColor(color)
   }
@@ -53,15 +47,27 @@ function App() {
   }
   const fetchBrandPaletteByUrl = () => {
     setLoading(true)
-    axios.get('https://api.apiflash.com/v1/urltoimage?access_key=b1cbdbf2aeec479f866b6ae4b35296ac&url=' + brandUrl, { responseType: 'arraybuffer' })
-      .then(res => {
-        const image = _arrayBufferToBase64(res.data)
+    axios.post(
+      'https://dockerhost.forge-parse-server.c66.me:40123/parse/functions/getScreenshot',
+      { brandUrl },
+      {
+        headers: {
+          'X-Parse-Application-Id': '6e66d7ca36d7c271801bdada14bc9490',
+          'X-Parse-Master-Key': '2d8fcc6094438a0246358cf8142e00d3',
+          'Content-Type': 'application/json'
+        }
+      }
+    ).then(res => {
+      const b64screenshot = res.data?.result?.screenshot
 
+      if (b64screenshot) {
         const baseImage = new Image()
-        baseImage.src = 'data:image/png;base64,' + image
+        baseImage.src = 'data:image/png;base64,' + b64screenshot
         baseImage.onload = catchColor
-        setLoading(false)
-      })
+      }
+
+      setLoading(false)
+    })
   }
 
   return (
