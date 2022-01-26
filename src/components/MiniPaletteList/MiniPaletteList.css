@@ -1,0 +1,22 @@
+.mini-palette-list {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.mini-palette-list-item {
+  width: 24px;
+  height: 24px;
+  border-radius: 5px;
+  border: 1px solid #888888;
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+.mini-palette-list-item:last-of-type {
+  margin-right: 0;
+}
+
+.mini-palette-list-item[data-selected="true"] {
+  border: 1px solid #ffffff;
+  outline: 1px solid #EA3368;
+}
