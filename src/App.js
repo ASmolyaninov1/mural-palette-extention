@@ -1,9 +1,10 @@
 import axios from "axios"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import ColorThief from 'color-thief-browser'
 
 import { Button, TextAndFileInput, PaletteList, MiniPaletteList } from "./components"
 import { ArrowIcon, PlusIcon } from "./icons"
+import useJoinImages from './hooks/joinImages'
 
 import './App.css'
 
@@ -13,8 +14,17 @@ function App() {
   const [file, setFile] = useState(null)
   const [selectedColor, setSelectedColor] = useState(null)
   const [loading, setLoading] = useState(false)
+  const [joinedImage, joinImages] = useJoinImages()
 
-  const handlePaintBorder = async () => {
+  useEffect(() => {
+    if (!!joinedImage) {
+      const img = new Image()
+      img.src = joinedImage
+      img.onload = catchColor
+    }
+  }, [joinedImage])
+
+  const handlePaintWidgetBorder = async () => {
     const selectedWidgetsList = await window.muralSdk.selectionSdk.list()
     if (selectedWidgetsList.length) {
       selectedWidgetsList.forEach(selectedWidget => {
@@ -23,7 +33,7 @@ function App() {
       })
     }
   }
-  const handlePaintBackground = async () => {
+  const handlePaintWidgetBackground = async () => {
     const selectedWidgetsList = await window.muralSdk.selectionSdk.list()
     if (selectedWidgetsList.length) {
       selectedWidgetsList.forEach(selectedWidget => {
@@ -31,6 +41,7 @@ function App() {
       })
     }
   }
+
   function catchColor() {
     const colorThief = new ColorThief()
     const palette = colorThief.getPalette(this, 9)
@@ -51,7 +62,7 @@ function App() {
   const getPaletteByFile = () => {
     if (!file) return
 
-    const fileExt = file.name.split('.').reverse()[0]
+    const fileExt = file.name.split('.').reverse()[0].toLowerCase()
     if (fileExt === 'png' || fileExt === 'jpeg' || fileExt === 'jpg') {
       const reader = new FileReader()
       reader.readAsDataURL(file)
@@ -63,57 +74,49 @@ function App() {
       }
     }
     if (fileExt === 'pdf') {
-      var reader = new FileReader()
-      reader.readAsDataURL(file)
-      reader.onloadend = function (e) {
-        console.log(e.target.result)
-        // var myImage = new Image() // Creates image object
-        // myImage.src = e.target.result // Assigns converted image to image object
-        // myImage.onload = function(ev) {
-        //   var myCanvas = document.getElementById("myCanvas") // Creates a canvas object
-        //   var myContext = myCanvas.getContext("2d") // Creates a contect object
-        //   myCanvas.width = myImage.width // Assigns image's width to canvas
-        //   myCanvas.height = myImage.height // Assigns image's height to canvas
-        //   myContext.drawImage(myImage,0,0) // Draws the image on canvas
-        //   let imgData = myCanvas.toDataURL("image/jpeg",0.75) // Assigns image base64 string in jpeg format to a variable
-        // }
+      const fr = new FileReader()
+      fr.readAsDataURL(file)
+      fr.onload = function () {
+        const b64pdf = fr.result
+
+        axios.post(
+          'http://localhost:1337/parse/functions/getPdfScreenshot',
+          { pdf: b64pdf },
+          {
+            headers: {
+              'X-Parse-Application-Id': 'b334e60e0d3181d1bf0f544a9f4c4caf',
+              'X-Parse-Master-Key': '0b31d1d5f133ddd9333232396daba892',
+              'Content-Type': 'application/json'
+            }
+        }).then(res => {
+          const imageFiles = res?.data?.result
+          const imageUrls = (imageFiles || []).map(imageFile => {
+            return imageFile?.Url
+          })
+          joinImages(imageUrls)
+        })
       }
     }
-  }
-  const test = () => {
-    axios.post(
-      'https://dockerhost.forge-parse-server.c66.me:40131/parse/functions/test',
-      { brandUrl },
-      {
-        headers: {
-          'X-Parse-Application-Id': '10907e4927b09f11c09f5132d1712ded',
-          'X-Parse-Master-Key': '845443be6b59c7de6e47a0f01c681730',
-          'Content-Type': 'application/json'
-        }
-      }
-    ).then(res => console.log(res))
   }
   const fetchBrandPaletteByUrl = () => {
     setLoading(true)
     axios.post(
-      'https://dockerhost.forge-parse-server.c66.me:40131/parse/functions/getPalette',
+      'https://dockerhost.forge-parse-server.c66.me:40140/parse/functions/getScreenshot',
       { brandUrl },
       {
         headers: {
-          'X-Parse-Application-Id': '10907e4927b09f11c09f5132d1712ded',
-          'X-Parse-Master-Key': '845443be6b59c7de6e47a0f01c681730',
+          'X-Parse-Application-Id': 'b334e60e0d3181d1bf0f544a9f4c4caf',
+          'X-Parse-Master-Key': '0b31d1d5f133ddd9333232396daba892',
           'Content-Type': 'application/json'
         }
       }
     ).then(res => {
-      console.log('res => ', res)
-      // const b64screenshot = res.data?.result?.screenshot
-      //
-      // if (b64screenshot) {
-      //   const baseImage = new Image()
-      //   baseImage.src = 'data:image/png;base64,' + b64screenshot
-      //   baseImage.onload = catchColor
-      // }
+      const b64screenshot = res.data?.result?.screenshot
+      if (b64screenshot) {
+        const baseImage = new Image()
+        baseImage.src = 'data:image/png;base64,' + b64screenshot
+        baseImage.onload = catchColor
+      }
 
       setLoading(false)
     })
@@ -131,7 +134,7 @@ function App() {
   const renderMain = () => {
     return (
       <>
-        <div className={'app-hint'} onClick={test}>Enter the website url to get the brand palette</div>
+        <div className={'app-hint'}>Enter the website url to get the brand palette</div>
         <TextAndFileInput
           fileInputProps={{ onChange: handleSetFile, onRemoveFile: handleRemoveFile }}
           textInputProps={{ onChange: handleInputChange, onKeyDown: handleInputKeyDown, defaultValue: brandUrl }}
@@ -156,13 +159,13 @@ function App() {
           <div className={'app-coloring-mode-type-list'}>
             <div className={'app-coloring-mode-type'}>
               <div>Fill</div>
-              <div className={'app-coloring-mode-type-icon'} onClick={handlePaintBackground}>
+              <div className={'app-coloring-mode-type-icon'} onClick={handlePaintWidgetBackground}>
                 <PlusIcon />
               </div>
             </div>
             <div className={'app-coloring-mode-type'}>
               <div>Border</div>
-              <div className={'app-coloring-mode-type-icon'} onClick={handlePaintBorder}>
+              <div className={'app-coloring-mode-type-icon'} onClick={handlePaintWidgetBorder}>
                 <PlusIcon />
               </div>
             </div>
