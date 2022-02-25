@@ -1,0 +1,30 @@
+.navigation-wrapper {
+  display: flex;
+  margin-bottom: 32px;
+}
+
+.navigation-item {
+  position: relative;
+  font-weight: bold;
+  cursor: pointer;
+  color: #888888;
+}
+.navigation-item:hover {
+  color: #000000;
+}
+
+.navigation-item:not(:last-of-type) {
+  margin-right: 25px;
+}
+
+.navigation-item[data-selected="true"] {
+  color: #000000;
+}
+.navigation-item[data-selected="true"]::before {
+  content: "";
+  position: absolute;
+  bottom: -6px;
+  width: 100%;
+  height: 3px;
+  background: #EA3368;
+}

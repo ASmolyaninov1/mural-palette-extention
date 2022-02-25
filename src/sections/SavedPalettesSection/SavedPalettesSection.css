@@ -1,0 +1,73 @@
+.saved-palettes-hint {
+  color: #888888;
+  margin-bottom: 30px;
+}
+
+.saved-palettes-palette {
+  padding-bottom: 20px;
+  border-bottom: 1px solid #f4f4f4;
+}
+
+.saved-palettes-palette:not(:last-of-type) {
+  margin-bottom: 20px;
+}
+
+.saved-palettes-palette-title {
+  margin-bottom: 20px;
+  font-weight: 600;
+}
+
+.saved-palettes-palette-content {
+  display: flex;
+  align-items: center;
+}
+
+.saved-palettes-palette-content-color {
+  min-width: 24px;
+  max-width: 24px;
+  min-height: 24px;
+  max-height: 24px;
+  border-radius: 5px;
+  border: 1px solid #888888;
+}
+
+.saved-palettes-palette-content-color:not(:last-of-type) {
+  margin-right: 5px;
+}
+
+.saved-palettes-palette-content-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  max-width: 24px;
+  min-height: 24px;
+  max-height: 24px;
+  cursor: pointer;
+}
+
+.saved-palettes-palette-content-delete {
+  margin-left: auto;
+  margin-right: 8px;
+}
+
+.saved-palettes-palette-content-delete-popover {
+  min-width: 206px;
+  max-width: 206px;
+}
+
+.saved-palettes-palette-content-delete-popover-buttons {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.saved-palettes-palette-content-delete-popover-buttons > .button {
+  margin-top: 22px;
+  max-width: 80px;
+  min-width: 80px;
+  margin-bottom: 0;
+}
+
+.saved-palettes-palette-content-delete-popover-buttons > .button:first-of-type {
+  margin-right: 12px;
+}

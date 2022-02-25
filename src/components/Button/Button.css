@@ -10,9 +10,49 @@ button {
 
 .button {
   align-self: flex-end;
-  color: #ffffff;
-  padding: 20px;
   margin-bottom: 20px;
-  background: #EA3368;
   border-radius: 5px;
+}
+.button:disabled {
+  cursor: default;
+}
+
+/* ============= sizes ============== */
+.lg-button {
+  padding: 20px;
+}
+
+.md-button {
+  min-width: 80px;
+  padding: 8px 12px;
+  height: 34px;
+  text-align: center;
+}
+
+/* ============= types ============== */
+.secondary-button {
+  background: #ffffff;
+  border: 1px solid #E1315B;
+  color: #E1315B;
+}
+.secondary-button:hover {
+  background: #FFECF0;
+}
+.secondary-button:disabled {
+  border: 1px solid #E0E0E0;
+  color: #E0E0E0;
+}
+
+.primary-button {
+  color: #ffffff;
+  background: #EA3368;
+}
+.primary-button:hover {
+  background: #CE284F;
+}
+.primary-button:active {
+  background: #AC1D3F;
+}
+.primary-button:disabled {
+  background: #E0E0E0;
 }

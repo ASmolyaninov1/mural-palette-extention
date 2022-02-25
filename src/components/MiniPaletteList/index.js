@@ -1,18 +1,16 @@
 import React from 'react'
+import { fromRGBToHex } from "helpers"
+
 import './MiniPaletteList.css'
 
-const fromRGBToHex = ([ r, g, b ]) => {
-  return [r, g, b].reduce((acc, el) => {
-    const hex = el.toString(16)
-    if (hex.length === 1) {
-      return acc + 0 + hex
-    }
-    return acc + hex
-  }, '#')
-}
+/*
+  paletteList: [[r, g, b], [r, g, b], ...] !required
+  selectedColor: #someHexColor,
+  handleSelect: (#someHexColor) => void
+ */
 
 const MiniPaletteList = ({ paletteList, selectedColor, handleSelect }) => {
-  const handleSelectColor = (color) => handleSelect(color)
+  const handleSelectColor = (color) => handleSelect && handleSelect(color)
 
   return (
     <div className={'mini-palette-list'}>

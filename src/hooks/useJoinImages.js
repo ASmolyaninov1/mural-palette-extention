@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react"
 
-export default function useJoinImages() {
+const useJoinImages = () => {
   const [loadedImagesCounter, setLoadedImagesCounter] = useState(0)
   const [imagesLength, setImagesLength] = useState(null)
   const [resultImage, setResultImage] = useState(null)
@@ -79,3 +79,5 @@ export default function useJoinImages() {
 
   return [resultImage, joinImages]
 }
+
+export default useJoinImages

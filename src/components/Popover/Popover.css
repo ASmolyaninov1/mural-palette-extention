@@ -1,0 +1,24 @@
+.popover {
+  position: relative;
+  display: inline-block;
+  z-index: 1;
+}
+
+.popover-content {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  top: 20px;
+  padding: 16px;
+  background: #FFFFFF;
+  border-radius: 10px;
+  box-shadow: 2px 4px 15px rgba(89, 89, 89, 0.25);
+  visibility: hidden;
+  opacity: 0;
+  transition: visibility, opacity 300ms ease-in;
+}
+
+.popover-content[data-opened="true"] {
+  visibility: visible;
+  opacity: 1;
+}

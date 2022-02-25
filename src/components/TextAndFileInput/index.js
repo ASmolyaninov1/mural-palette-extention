@@ -1,15 +1,25 @@
 import React from 'react'
-import { CrossIcon } from "../../icons"
+import { CrossIcon } from "icons"
+import { Button } from 'components'
 
 import './TextAndFileInput.css'
 
-const TextAndFileInput = ({ textInputProps, fileInputProps: { onRemoveFile, ...fileInputProps }, file}) => {
+const TextAndFileInput = props => {
+  const {
+    textInputProps,
+    fileInputProps: { onRemoveFile, ...fileInputProps },
+    buttonProps: { text: buttonText, ...buttonProps },
+    disabled,
+    file,
+    errorMessage
+  } = props
+
   const fileName = file?.name || ''
   const shortedFileName = fileName.length > 15 ? fileName.slice(0, 5) + '...' + fileName.slice(-6) : fileName
 
   return (
     <>
-      <div className={'text-input-wrapper'}>
+      <div className={'text-input-wrapper'} data-disabled={disabled}>
         {
           file ? (
             <div className={'text-input-file-indicator'}>
@@ -22,8 +32,10 @@ const TextAndFileInput = ({ textInputProps, fileInputProps: { onRemoveFile, ...f
             <input className={'text-input'} {...textInputProps} />
           )
         }
+        <Button {...buttonProps} disabled={disabled}>{buttonText}</Button>
       </div>
-      <div className={'app-input-file-wrapper'}>
+      {!!errorMessage && <div className={'text-input-error-message'}>{errorMessage}</div>}
+      <div>
         Or{' '}
         <label className={'file-input'}>
           upload image
