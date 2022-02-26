@@ -23,7 +23,13 @@ const SavedPalettesSection = ({ handleChangeSection }) => {
   }
 
   const handleDeletePalette = (id, closePopover) => () => {
-    deletePalette(id).then(() => closePopover())
+    deletePalette(id).then((res) => {
+      if (res?.result === 'success') {
+        const newPalettesList = palettesList.filter(palette => id !== palette.objectId)
+        setPalettesList(newPalettesList)
+      }
+      closePopover()
+    })
   }
 
   const renderPalettesList = () => {
@@ -42,7 +48,11 @@ const SavedPalettesSection = ({ handleChangeSection }) => {
         <Navigation items={navigationItems} selectedItemId={'saved'} />
         {palettesList.map((palette, index) => {
           return (
-            <div key={index} className={'saved-palettes-palette'}>
+            <div
+              key={index}
+              className={'saved-palettes-palette'}
+              onClick={() => handleChangeSection('get-palette', { selectedPalette: palette.colors })}
+            >
               <div className={'saved-palettes-palette-title'}>{palette.title}</div>
               <div className={'saved-palettes-palette-content'}>
                 {palette.colors.map(color => {
@@ -67,15 +77,30 @@ const SavedPalettesSection = ({ handleChangeSection }) => {
                         Are you sure you want to delete this palette?
                       </div>
                       <div className={'saved-palettes-palette-content-delete-popover-buttons'}>
-                        <Button type={'secondary'} size={'md'}>Cancel</Button>
-                        <Button loading={loading} size={'md'} onClick={handleDeletePalette(palette.objectId, close)}>Delete</Button>
+                        <Button
+                          type={'secondary'}
+                          size={'md'}
+                          onClick={close}
+                        >
+                          Cancel
+                        </Button>
+                        <Button
+                          loading={loading}
+                          size={'md'}
+                          onClick={handleDeletePalette(palette.objectId, close)}
+                        >
+                          Yes
+                        </Button>
                       </div>
                     </div>
                   )}
                 </Popover>
                 <div
                   className={'saved-palettes-palette-content-icon'}
-                  onClick={() => console.log('share item')}
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    console.log('share item')
+                  }}
                 >
                   <ShareIcon />
                 </div>

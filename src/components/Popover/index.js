@@ -23,7 +23,8 @@ const Popover = props => {
     return () => window.removeEventListener('click', handleClickOutside)
   }, [popoverRef?.current])
 
-  const handlePopover = () => {
+  const handlePopover = (e) => {
+    e.stopPropagation()
     setIsPopoverOpen(!isPopoverOpen)
   }
 

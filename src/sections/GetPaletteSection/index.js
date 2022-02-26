@@ -8,7 +8,7 @@ import { fromRGBToHex, sections } from 'helpers'
 
 import './GetPaletteSection.css'
 
-const GetPaletteSection = ({ handleChangeSection }) => {
+const GetPaletteSection = ({ handleChangeSection, sectionProps = {} }) => {
   const [brandPalette, setBrandPalette] = useState([])
   const [brandUrl, setBrandUrl] = useState('https://facebook.com')
   const [file, setFile] = useState(null)
@@ -16,6 +16,15 @@ const GetPaletteSection = ({ handleChangeSection }) => {
   const [paletteTitleToSave, setPaletteTitleToSave] = useState('')
   const [joinedImage, joinImages] = useJoinImages()
   const { loading, getPdfScreenshot, getSiteScreenshot, createPalette } = useApi()
+
+  useEffect(() => {
+    const { selectedPalette } = sectionProps
+
+    if (selectedPalette) {
+      setBrandPalette(selectedPalette)
+      setSelectedColor(selectedPalette[0])
+    }
+  }, [])
 
   useEffect(() => {
     if (!!joinedImage) {
@@ -46,7 +55,8 @@ const GetPaletteSection = ({ handleChangeSection }) => {
   function catchColor() {
     const colorThief = new ColorThief()
     const palette = colorThief.getPalette(this, 9)
-    setBrandPalette(palette)
+    const hexPalette = palette.map(item => fromRGBToHex(item))
+    setBrandPalette(hexPalette)
   }
   const handleInputChange = (e) => {
     setBrandUrl(e.currentTarget.value)
@@ -108,8 +118,7 @@ const GetPaletteSection = ({ handleChangeSection }) => {
   const handleRemoveFile = () => setFile(null)
 
   const handleCreatePalette = (closePopover) => () => {
-    const hexPalette = brandPalette.map(color => fromRGBToHex(color))
-    createPalette({ colors: hexPalette, title: paletteTitleToSave })
+    createPalette({ colors: brandPalette, title: paletteTitleToSave })
     closePopover()
   }
 
@@ -201,6 +210,7 @@ const GetPaletteSection = ({ handleChangeSection }) => {
       </>
     )
   }
+
   return selectedColor ? renderColoringMode() : renderMain()
 }
 

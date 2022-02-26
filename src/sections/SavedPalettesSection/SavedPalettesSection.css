@@ -4,8 +4,13 @@
 }
 
 .saved-palettes-palette {
+  position: relative;
   padding-bottom: 20px;
   border-bottom: 1px solid #f4f4f4;
+  cursor: pointer;
+}
+.saved-palettes-palette:hover {
+  background: #FBFBFB;
 }
 
 .saved-palettes-palette:not(:last-of-type) {
@@ -44,6 +49,10 @@
   min-height: 24px;
   max-height: 24px;
   cursor: pointer;
+}
+.saved-palettes-palette-content-icon:active {
+  background: #F8F8F8;
+  border-radius: 5px;
 }
 
 .saved-palettes-palette-content-delete {

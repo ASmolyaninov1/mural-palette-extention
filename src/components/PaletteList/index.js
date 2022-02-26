@@ -20,19 +20,18 @@ const PaletteList = ({ paletteList, handleSelect, selectedColor }) => {
       </div>
       <ul className={'palette-list'}>
         {paletteList.map(color => {
-          const hexColor = fromRGBToHex(color)
 
           return (
-            <li className={'palette-list-item'} key={hexColor}>
+            <li className={'palette-list-item'} key={color}>
               <div
                 className={'palette-list-item-color'}
-                style={{ backgroundColor: hexColor }}
-                data-selected={hexColor === selectedColor}
-                onClick={handleSelectColor(hexColor)}
+                style={{ backgroundColor: color }}
+                data-selected={color === selectedColor}
+                onClick={handleSelectColor(color)}
               />
               <div className={'palette-list-item-info'}>
-                <div>{hexColor}</div>
-                <CopyIcon onClick={handleCopyToClipboard(hexColor.toUpperCase())} />
+                <div>{color}</div>
+                <CopyIcon onClick={handleCopyToClipboard(color.toUpperCase())} />
               </div>
             </li>
           )
