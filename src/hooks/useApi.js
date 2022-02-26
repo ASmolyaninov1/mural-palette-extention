@@ -4,6 +4,8 @@ import axios from "axios"
 const PROD_API_URL = 'https://dockerhost.forge-parse-server.c66.me:40140'
 const DEV_API_URL = 'http://localhost:1337'
 
+const API_URL = PROD_API_URL
+
 axios.interceptors.request.use(function (config) {
   return {
     ...config,
@@ -24,7 +26,7 @@ const useApi = () => {
     setLoading(true)
     try {
       const result = await axios.post(
-        DEV_API_URL + '/parse/functions/getPdfScreenshot',
+        API_URL + '/parse/functions/getPdfScreenshot',
         { pdf: b64pdf },
         {
           headers: {  }
@@ -43,7 +45,7 @@ const useApi = () => {
     setLoading(true)
     try {
       const result = await axios.post(
-        DEV_API_URL + '/parse/functions/getSiteScreenshot',
+        API_URL + '/parse/functions/getSiteScreenshot',
         { brandUrl }
       )
 
@@ -59,7 +61,7 @@ const useApi = () => {
     try {
       const { colors, title } = palette
       const result = await axios.post(
-        DEV_API_URL + '/parse/functions/createPalette',
+        API_URL + '/parse/functions/createPalette',
         { colors, title }
       )
 
@@ -72,7 +74,7 @@ const useApi = () => {
   const getPalette = async (id) => {
     try {
       const result = await axios.post(
-        DEV_API_URL + '/parse/functions/getPalette',
+        API_URL + '/parse/functions/getPalette',
         { id }
       )
 
@@ -85,7 +87,7 @@ const useApi = () => {
   const getAllPalettes = async () => {
     setLoading(true)
     try {
-      const result = await axios.post(DEV_API_URL + '/parse/functions/getAllPalettes')
+      const result = await axios.post(API_URL + '/parse/functions/getAllPalettes')
 
       setLoading(false)
       return result?.data?.result
@@ -97,7 +99,7 @@ const useApi = () => {
 
   const deletePalette = async (id) => {
     try {
-      const result = await axios.post(DEV_API_URL + '/parse/functions/deletePalette', { id })
+      const result = await axios.post(API_URL + '/parse/functions/deletePalette', { id })
       return result?.data?.result
     } catch (e) {
       return e
