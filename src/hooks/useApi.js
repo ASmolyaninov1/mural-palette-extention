@@ -106,6 +106,18 @@ const useApi = () => {
     }
   }
 
+  const updatePalette = async (id, { colors = null, title = null }) => {
+    setLoading(true)
+    try {
+      const result = await axios.post(API_URL + '/parse/functions/updatePalette', { id, colors, title })
+      setLoading(false)
+      return result?.data?.result
+    } catch (e) {
+      setLoading(false)
+      return e
+    }
+  }
+
   return {
     getPdfScreenshot,
     getSiteScreenshot,
@@ -113,6 +125,7 @@ const useApi = () => {
     createPalette,
     getAllPalettes,
     deletePalette,
+    updatePalette,
     loading
   }
 }

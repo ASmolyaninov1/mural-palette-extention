@@ -2,8 +2,15 @@ import React, { useEffect, useState, useRef } from 'react'
 
 import './Popover.css'
 
+/*
+  props:
+    children: (closeFunc) => Element
+    trigger: Element
+    position: 'center' | 'left' | 'right'
+*/
+
 const Popover = props => {
-  const { children, trigger } = props
+  const { children, trigger, position = 'center' } = props
   const [isPopoverOpen, setIsPopoverOpen] = useState()
   const popoverRef = useRef(null)
 
@@ -31,7 +38,11 @@ const Popover = props => {
   return (
     <div className={'popover'} ref={popoverRef} onClick={handlePopover}>
       {trigger}
-      <div data-opened={isPopoverOpen} className={'popover-content'} onClick={e => e.stopPropagation()}>
+      <div
+        data-opened={isPopoverOpen}
+        className={`popover-content popover-content-${position}`}
+        onClick={e => e.stopPropagation()}
+      >
         {children(() => setIsPopoverOpen(false))}
       </div>
     </div>

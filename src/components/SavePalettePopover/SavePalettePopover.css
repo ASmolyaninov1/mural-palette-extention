@@ -1,0 +1,43 @@
+.save-palette-popover-trigger {
+  color: #EA3368;
+  text-decoration: underline;
+  cursor: pointer;
+}
+.save-palette-popover-trigger:hover {
+  color: #CE284F;
+}
+.save-palette-popover-trigger:active {
+  color: #AC1D3F;
+}
+
+.save-palette-popover {
+  display: flex;
+  flex-direction: column;
+}
+
+.save-palette-popover-title {
+  font-weight: 600;
+  white-space: nowrap;
+  margin-bottom: 14px;
+}
+
+.save-palette-popover-input {
+  min-width: 200px;
+  border: 1px solid #BABABA;
+  outline: none;
+  padding: 12px 12px;
+  margin: 0 0 16px 0;
+  background: transparent;
+  border-radius: 10px;
+  font-size: 12px;
+}
+
+.save-palette-popover-input::placeholder {
+  color: #848484
+}
+
+.save-palette-popover > .button {
+  margin-left: auto;
+  margin-bottom: 0;
+  justify-self: flex-end;
+}

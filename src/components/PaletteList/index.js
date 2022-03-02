@@ -1,15 +1,12 @@
 import React from 'react'
 import { CopyIcon } from "icons"
-import { fromRGBToHex } from "helpers"
+import { copyToClipboard } from "helpers"
 
 import './PaletteList.css'
 
 const PaletteList = ({ paletteList, handleSelect, selectedColor }) => {
   const handleSelectColor = (color) => handleSelect(color)
-  const handleCopyToClipboard = color => () => {
-    if (!navigator.clipboard) return
-    navigator.clipboard.writeText(color)
-  }
+  const handleCopyIconClick = (color) => copyToClipboard(color)
 
   if (!paletteList.length) return null
 
@@ -31,7 +28,7 @@ const PaletteList = ({ paletteList, handleSelect, selectedColor }) => {
               />
               <div className={'palette-list-item-info'}>
                 <div>{color}</div>
-                <CopyIcon onClick={handleCopyToClipboard(color.toUpperCase())} />
+                <CopyIcon onClick={handleCopyIconClick(color.toUpperCase())} />
               </div>
             </li>
           )

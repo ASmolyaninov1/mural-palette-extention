@@ -12,3 +12,9 @@
   max-height: 100vh;
   font-size: 14px;
 }
+
+.app-hint {
+  color: #888888;
+  font-size: 14px;
+  margin-bottom: 30px;
+}

@@ -6,5 +6,9 @@ export const sections = [
   {
     title: 'Saved',
     id: 'saved'
+  },
+  {
+    title: 'Make palette',
+    id: 'make-palette'
   }
 ]

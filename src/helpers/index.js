@@ -8,5 +8,10 @@ const fromRGBToHex = ([ r, g, b ]) => {
   }, '#')
 }
 
+const copyToClipboard = term => {
+  if (!navigator.clipboard) return
+  navigator.clipboard.writeText(term)
+}
+
 export * from './mocks'
-export { fromRGBToHex }
+export { fromRGBToHex, copyToClipboard }

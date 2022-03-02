@@ -2,18 +2,17 @@ import React, { useState, useEffect } from 'react'
 import ColorThief from "color-thief-browser"
 
 import { useApi, useJoinImages } from "hooks"
-import { MiniPaletteList, Navigation, PaletteList, Popover, TextAndFileInput, Button } from "components"
+import { MiniPaletteList, PaletteList, SavePalettePopover, TextAndFileInput } from "components"
 import { ArrowIcon, PlusIcon } from "icons"
-import { fromRGBToHex, sections } from 'helpers'
+import { fromRGBToHex } from 'helpers'
 
 import './GetPaletteSection.css'
 
-const GetPaletteSection = ({ handleChangeSection, sectionProps = {} }) => {
+const GetPaletteSection = ({ sectionProps = {} }) => {
   const [brandPalette, setBrandPalette] = useState([])
   const [brandUrl, setBrandUrl] = useState('https://facebook.com')
   const [file, setFile] = useState(null)
   const [selectedColor, setSelectedColor] = useState(null)
-  const [paletteTitleToSave, setPaletteTitleToSave] = useState('')
   const [joinedImage, joinImages] = useJoinImages()
   const { loading, getPdfScreenshot, getSiteScreenshot, createPalette } = useApi()
 
@@ -117,23 +116,13 @@ const GetPaletteSection = ({ handleChangeSection, sectionProps = {} }) => {
   const handleSetFile = (e) => setFile(e?.target?.files[0] || null)
   const handleRemoveFile = () => setFile(null)
 
-  const handleCreatePalette = (closePopover) => () => {
-    createPalette({ colors: brandPalette, title: paletteTitleToSave })
-    closePopover()
+  const handleCreatePalette = (title) => {
+    createPalette({ colors: brandPalette, title })
   }
 
   const renderMain = () => {
-    const navigationItems = sections.map(item => {
-      return {
-        ...item,
-        onClick: () => handleChangeSection(item.id)
-      }
-    })
-
     return (
       <>
-        <div className={'get-palette-hint'}>Enter the website url to get the brand palette</div>
-        <Navigation items={navigationItems} selectedItemId={'get-palette'} />
         <TextAndFileInput
           fileInputProps={{ onChange: handleSetFile, onRemoveFile: handleRemoveFile }}
           textInputProps={{ onChange: handleInputChange, onKeyDown: handleInputKeyDown, defaultValue: brandUrl }}
@@ -150,32 +139,7 @@ const GetPaletteSection = ({ handleChangeSection, sectionProps = {} }) => {
             className={'get-palette-save-hint'}
           >
             Liked this palette? You can{' '}
-            <Popover trigger={<span className={'get-palette-save-hint-button'}>save</span>}>
-              {
-                (close => (
-                  <div className={'get-palette-save-palette-popover'}>
-                    <div className={'get-palette-save-palette-popover-title'}>Name palette to save it</div>
-                    <input
-                      className={'get-palette-save-palette-popover-input'}
-                      placeholder={'Type title here'}
-                      onChange={(e) => {
-                        setPaletteTitleToSave(e.target.value)
-                      }}
-                      onKeyDown={e => {
-                        if (e.key === 'Enter') handleCreatePalette(close)()
-                      }}
-                    />
-                    <Button
-                      size={'md'}
-                      disabled={!paletteTitleToSave.length}
-                      onClick={handleCreatePalette(close)}
-                    >
-                      Save palette
-                    </Button>
-                  </div>
-                ))
-              }
-            </Popover>{' '}
+            <SavePalettePopover handleSave={handleCreatePalette} />{' '}
             it.
           </div>
         )}

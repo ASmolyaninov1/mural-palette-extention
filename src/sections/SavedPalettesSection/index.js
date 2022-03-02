@@ -33,19 +33,8 @@ const SavedPalettesSection = ({ handleChangeSection }) => {
   }
 
   const renderPalettesList = () => {
-    const navigationItems = sections.map(item => {
-      return {
-        ...item,
-        onClick: () => handleChangeSection(item.id)
-      }
-    })
-
     return (
       <div>
-        <div className={'saved-palettes-hint'}>
-          Lorem ipsum dolor sit amet, consectetur adipisicing elit. Minima, nihil.
-        </div>
-        <Navigation items={navigationItems} selectedItemId={'saved'} />
         {palettesList.map((palette, index) => {
           return (
             <div

@@ -7,7 +7,6 @@
 .popover-content {
   position: absolute;
   left: 50%;
-  transform: translateX(-50%);
   top: 20px;
   padding: 16px;
   background: #FFFFFF;
@@ -16,6 +15,16 @@
   visibility: hidden;
   opacity: 0;
   transition: visibility, opacity 300ms ease-in;
+}
+
+.popover-content-center {
+  transform: translateX(-50%);
+}
+.popover-content-left {
+  transform: translateX(-100%);
+}
+.popover-content-right {
+  transform: translateX(0);
 }
 
 .popover-content[data-opened="true"] {
