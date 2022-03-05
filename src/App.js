@@ -6,7 +6,7 @@ import { sections } from "helpers"
 import './App.css'
 
 function App() {
-  const [currentSection, setCurrentSection] = useState('make-palette')
+  const [currentSection, setCurrentSection] = useState('get-palette')
   const [sectionProps, setSectionProps] = useState({})
 
   const handleChangeSection = (section, props = {}) => {

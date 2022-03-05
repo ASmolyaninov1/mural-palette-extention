@@ -4,7 +4,7 @@ import axios from "axios"
 const PROD_API_URL = 'https://dockerhost.forge-parse-server.c66.me:40140'
 const DEV_API_URL = 'http://localhost:1337'
 
-const API_URL = DEV_API_URL
+const API_URL = PROD_API_URL
 
 axios.interceptors.request.use(function (config) {
   return {
