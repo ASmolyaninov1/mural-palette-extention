@@ -4,10 +4,13 @@
   padding: 0;
 }
 
+body {
+  font-family: Roboto, sans-serif;
+}
+
 .app {
   display: flex;
   flex-direction: column;
-  font-family: Roboto, sans-serif;
   padding: 0 4px;
   max-height: 100vh;
   font-size: 14px;

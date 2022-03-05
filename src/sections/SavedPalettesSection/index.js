@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from 'react'
 import { useApi } from "hooks"
-import { Button, Navigation, Popover } from "components"
-import { sections } from "helpers"
-import { TrashIcon, ShareIcon } from "icons"
+import { Popover, DeletePaletteModal, RenamePaletteModal, Icon } from "components"
 
 import './SavedPalettesSection.css'
 
 const SavedPalettesSection = ({ handleChangeSection }) => {
   const [palettesList, setPalettesList] = useState([])
-  const { loading, getAllPalettes, deletePalette } = useApi()
+  const [deletePaletteModalOpen, setDeletePaletteModalOpen] = useState(false)
+  const [renamePaletteModalOpen, setRenamePaletteModalOpen] = useState(false)
+  const [paletteIdToDelete, setPaletteIdToDelete] = useState(null)
+  const [paletteIdToRename, setPaletteIdToRename] = useState(null)
+  const { loading, getAllPalettes, deletePalette, updatePalette } = useApi()
 
   useEffect(() => {
     fetchPalettesList()
@@ -22,86 +24,105 @@ const SavedPalettesSection = ({ handleChangeSection }) => {
     })
   }
 
-  const handleDeletePalette = (id, closePopover) => () => {
-    deletePalette(id).then((res) => {
+  const handleDeletePalette = () => {
+    deletePalette(paletteIdToDelete).then((res) => {
       if (res?.result === 'success') {
-        const newPalettesList = palettesList.filter(palette => id !== palette.objectId)
+        const newPalettesList = palettesList.filter(palette => paletteIdToDelete !== palette.objectId)
         setPalettesList(newPalettesList)
+        setDeletePaletteModalOpen(false)
       }
-      closePopover()
     })
   }
 
-  const renderPalettesList = () => {
-    return (
-      <div>
-        {palettesList.map((palette, index) => {
-          return (
-            <div
-              key={index}
-              className={'saved-palettes-palette'}
-              onClick={() => handleChangeSection('get-palette', { selectedPalette: palette.colors })}
-            >
-              <div className={'saved-palettes-palette-title'}>{palette.title}</div>
-              <div className={'saved-palettes-palette-content'}>
-                {palette.colors.map(color => {
-                  return (
-                    <div
-                      key={color}
-                      className={'saved-palettes-palette-content-color'}
-                      style={{ background: color }}
-                    />
-                  )
-                })}
-                <Popover
-                  trigger={
-                    <div className={'saved-palettes-palette-content-icon saved-palettes-palette-content-delete'}>
-                      <TrashIcon />
-                    </div>
-                  }
-                >
-                  {close => (
-                    <div className={'saved-palettes-palette-content-delete-popover'}>
-                      <div>
-                        Are you sure you want to delete this palette?
-                      </div>
-                      <div className={'saved-palettes-palette-content-delete-popover-buttons'}>
-                        <Button
-                          type={'secondary'}
-                          size={'md'}
-                          onClick={close}
-                        >
-                          Cancel
-                        </Button>
-                        <Button
-                          loading={loading}
-                          size={'md'}
-                          onClick={handleDeletePalette(palette.objectId, close)}
-                        >
-                          Yes
-                        </Button>
-                      </div>
-                    </div>
-                  )}
-                </Popover>
-                <div
-                  className={'saved-palettes-palette-content-icon'}
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    console.log('share item')
-                  }}
-                >
-                  <ShareIcon />
-                </div>
-              </div>
-            </div>
-          )
-        })}
-      </div>
-    )
+  const handleRenamePalette = (title) => {
+    updatePalette(paletteIdToRename, { title }).then(res => {
+      if (res?.result === 'success') {
+        const newPalettesList = [...palettesList]
+        const updatingPaletteIndex = palettesList.findIndex(palette => paletteIdToRename === palette.objectId)
+        newPalettesList[updatingPaletteIndex] = {...newPalettesList[updatingPaletteIndex], title}
+
+        setPalettesList(newPalettesList)
+        setRenamePaletteModalOpen(false)
+      }
+    })
   }
 
-  return renderPalettesList()
+  const handleRenamePaletteModalOpen = (id, closePopover) => () => {
+    setPaletteIdToRename(id)
+    setRenamePaletteModalOpen(true)
+    closePopover()
+  }
+  const handleRenamePaletteModalClose = () => {
+    setPaletteIdToRename(null)
+    setRenamePaletteModalOpen(false)
+  }
+
+  const handleDeletePaletteModalOpen = (id, close) => () => {
+    setPaletteIdToDelete(id)
+    setDeletePaletteModalOpen(true)
+    close()
+  }
+  const handleDeletePaletteModalClose = () => {
+    setDeletePaletteModalOpen(false)
+    setPaletteIdToDelete(null)
+  }
+
+  return (
+    <div>
+      <DeletePaletteModal
+        open={deletePaletteModalOpen}
+        onClose={handleDeletePaletteModalClose}
+        onCancel={handleDeletePaletteModalClose}
+        onDelete={handleDeletePalette}
+      />
+      <RenamePaletteModal
+        open={renamePaletteModalOpen}
+        onClose={handleRenamePaletteModalClose}
+        onCancel={handleRenamePaletteModalClose}
+        onComplete={handleRenamePalette}
+      />
+      {palettesList.map((palette, index) => {
+        return (
+          <div
+            key={index}
+            className={'saved-palettes-palette'}
+            onClick={() => handleChangeSection('get-palette', { selectedPalette: palette.colors })}
+          >
+            <div className={'saved-palettes-palette-title'}>{palette.title}</div>
+            <div className={'saved-palettes-palette-content'}>
+              {palette.colors.map(color => {
+                return (
+                  <div
+                    key={color}
+                    className={'saved-palettes-palette-content-color'}
+                    style={{ background: color }}
+                  />
+                )
+              })}
+              <Popover position={'left'} trigger={<Icon name={'Dots'} />}>
+                {close => (
+                  <div className={'saved-palettes-palette-content-popover-menu'}>
+                    <div
+                      className={'saved-palettes-palette-content-popover-menu-item'}
+                      onClick={handleRenamePaletteModalOpen(palette.objectId, close)}
+                    >
+                      Rename palette
+                    </div>
+                    <div
+                      className={'saved-palettes-palette-content-popover-menu-item'}
+                      onClick={handleDeletePaletteModalOpen(palette.objectId, close)}
+                    >
+                      Delete palette
+                    </div>
+                  </div>
+                )}
+              </Popover>
+            </div>
+          </div>
+        )
+      })}
+    </div>
+  )
 }
 
 export default SavedPalettesSection

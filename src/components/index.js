@@ -5,3 +5,8 @@ export { default as MiniPaletteList } from './MiniPaletteList'
 export { default as Navigation } from './Navigation'
 export { default as Popover } from './Popover'
 export { default as SavePalettePopover } from './SavePalettePopover'
+export { default as ModalWrapper } from './ModalWrapper'
+export { default as Icon } from './Icon'
+
+export { default as DeletePaletteModal } from './DeletePaletteModal'
+export { default as RenamePaletteModal } from './RenamePaletteModal'

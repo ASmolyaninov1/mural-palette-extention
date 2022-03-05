@@ -1,0 +1,40 @@
+.rename-palette-modal {
+  width: 100%;
+  padding: 16px;
+  border-radius: 10px;
+  box-shadow: 2px 4px 15px rgba(89, 89, 89, 0.25);
+  background-color: #ffffff;
+}
+
+.rename-palette-modal-title {
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+
+.rename-palette-modal-input {
+  width: 100%;
+  border: 1px solid #BABABA;
+  outline: none;
+  padding: 12px 12px;
+  margin: 0 0 16px 0;
+  background: transparent;
+  border-radius: 10px;
+  font-size: 12px;
+}
+
+.rename-palette-modal-input::placeholder {
+  color: #848484
+}
+
+.rename-palette-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.rename-palette-modal-actions .button {
+  margin-bottom: 0;
+}
+
+.rename-palette-modal-actions .button:not(:last-of-type) {
+  margin-right: 12px;
+}

@@ -4,6 +4,10 @@
   z-index: 1;
 }
 
+.popover[data-opened='true'] {
+  z-index: 9;
+}
+
 .popover-content {
   position: absolute;
   left: 50%;

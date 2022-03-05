@@ -2,8 +2,7 @@ import React, { useMemo, useState } from 'react'
 import { HexColorPicker } from "react-colorful"
 
 import { copyToClipboard } from "helpers"
-import { CopyIcon, PlusIcon } from 'icons'
-import { SavePalettePopover } from "components"
+import { SavePalettePopover, Icon } from "components"
 import { useApi } from "hooks"
 
 import './MakePaletteSection.css'
@@ -54,9 +53,7 @@ const MakePaletteSection = () => {
         <HexColorPicker color={currentHexColor} onChange={handleChangeColor} />
         <div className={'make-palette-color-picker-info'}>
           <div>{currentHexColor.toUpperCase()}</div>
-          <div className={'make-palette-color-picker-info-copy-icon'} onClick={() => copyToClipboard(currentHexColor)}>
-            <CopyIcon />
-          </div>
+          <Icon name={'Copy'} onClick={() => copyToClipboard(currentHexColor)} />
         </div>
       </div>
       <div className={'make-palette-preview-header'}>
@@ -65,9 +62,7 @@ const MakePaletteSection = () => {
       </div>
       <div className={'make-palette-preview-content'}>
         {palette.length < 8 && (
-          <div className={'make-palette-preview-content-plus-icon'} onClick={handleCreateColor}>
-            <PlusIcon />
-          </div>
+          <Icon name={'Plus'} onClick={handleCreateColor} className={'make-palette-preview-content-plus-icon'} />
         )}
         {palette.map(color => (
           <div

@@ -1,0 +1,25 @@
+.delete-palette-modal {
+  width: 100%;
+  padding: 16px;
+  border-radius: 10px;
+  box-shadow: 2px 4px 15px rgba(89, 89, 89, 0.25);
+  background-color: #ffffff;
+}
+
+.delete-palette-modal-title {
+  margin-bottom: 22px;
+  font-weight: 600;
+}
+
+.delete-palette-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.delete-palette-modal-actions .button {
+  margin-bottom: 0;
+}
+
+.delete-palette-modal-actions .button:not(:last-of-type) {
+  margin-right: 12px;
+}

@@ -36,7 +36,7 @@ const Popover = props => {
   }
 
   return (
-    <div className={'popover'} ref={popoverRef} onClick={handlePopover}>
+    <div className={'popover'} data-opened={isPopoverOpen} ref={popoverRef} onClick={handlePopover}>
       {trigger}
       <div
         data-opened={isPopoverOpen}
