@@ -8,6 +8,7 @@
   font-weight: bold;
   cursor: pointer;
   color: #888888;
+  text-decoration: none;
 }
 .navigation-item:hover {
   color: #000000;
@@ -17,10 +18,11 @@
   margin-right: 25px;
 }
 
-.navigation-item[data-selected="true"] {
+.navigation-item-active {
   color: #000000;
 }
-.navigation-item[data-selected="true"]::before {
+
+.navigation-item-active::before {
   content: "";
   position: absolute;
   bottom: -6px;

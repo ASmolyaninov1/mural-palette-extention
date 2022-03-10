@@ -1,13 +1,16 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Button, Popover } from "components"
 
 import './SavePalettePopover.css'
 
-const SavePalettePopover = ({ handleSave, position = 'center' }) => {
+const SavePalettePopover = ({ handleSave, position = 'center', triggerText = 'save', defaultTitle = '' }) => {
   const [title, setTitle] = useState('')
+  useEffect(() => {
+    setTitle(defaultTitle)
+  }, [defaultTitle])
 
   return (
-    <Popover position={position} trigger={<span className={'save-palette-popover-trigger'}>save</span>}>
+    <Popover position={position} trigger={<span className={'save-palette-popover-trigger'}>{triggerText}</span>}>
       {
         (close => (
           <div className={'save-palette-popover'}>
@@ -24,6 +27,7 @@ const SavePalettePopover = ({ handleSave, position = 'center' }) => {
                   close()
                 }
               }}
+              defaultValue={defaultTitle}
             />
             <Button
               size={'md'}

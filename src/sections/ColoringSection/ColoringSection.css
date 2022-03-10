@@ -1,0 +1,55 @@
+.coloring-section-back {
+  display: flex;
+  align-items: center;
+  width: fit-content;
+  margin-bottom: 20px;
+  margin-top: 22px;
+  cursor: pointer;
+}
+
+.coloring-section-back > svg {
+  margin-right: 20px;
+}
+
+.coloring-section-back:hover {
+  text-decoration: underline;
+}
+
+.coloring-section-title {
+  margin-bottom: 20px;
+}
+
+.coloring-section-type-list {
+  margin-top: 30px;
+}
+
+.coloring-section-type {
+  display: flex;
+  justify-content: space-between;
+  padding: 16px 0;
+  border-top: 1px solid #F4F4F4;
+  color: #888888;
+}
+
+.coloring-section-type:last-of-type {
+  border-bottom: 1px solid #F4F4F4;
+}
+
+.coloring-section-type-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.coloring-section-type-icon:hover {
+  background: #F0F0F0;
+}
+
+.coloring-section-colors-list {
+  display: flex;
+  justify-content: space-between;
+}

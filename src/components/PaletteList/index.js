@@ -4,9 +4,9 @@ import { copyToClipboard } from "helpers"
 
 import './PaletteList.css'
 
-const PaletteList = ({ paletteList, handleSelect, selectedColor }) => {
-  const handleSelectColor = (color) => handleSelect(color)
-  const handleCopyIconClick = (color) => copyToClipboard(color)
+const PaletteList = ({ paletteList, handleSelect }) => {
+  const handleSelectColor = (color) => () => handleSelect(color)
+  const handleCopyIconClick = (color) => () => copyToClipboard(color)
 
   if (!paletteList.length) return null
 
@@ -23,7 +23,6 @@ const PaletteList = ({ paletteList, handleSelect, selectedColor }) => {
               <div
                 className={'palette-list-item-color'}
                 style={{ backgroundColor: color }}
-                data-selected={color === selectedColor}
                 onClick={handleSelectColor(color)}
               />
               <div className={'palette-list-item-info'}>

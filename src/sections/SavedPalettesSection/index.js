@@ -1,15 +1,19 @@
 import React, { useEffect, useState } from 'react'
+import { navigate } from '@reach/router'
+import { useAlert } from "react-alert"
+
 import { useApi } from "hooks"
-import { Popover, DeletePaletteModal, RenamePaletteModal, Icon } from "components"
+import { Popover, DeletePaletteModal, SavePaletteModal, Icon, MenuPopover } from "components"
 
 import './SavedPalettesSection.css'
 
-const SavedPalettesSection = ({ handleChangeSection }) => {
+const SavedPalettesSection = () => {
   const [palettesList, setPalettesList] = useState([])
   const [deletePaletteModalOpen, setDeletePaletteModalOpen] = useState(false)
   const [renamePaletteModalOpen, setRenamePaletteModalOpen] = useState(false)
   const [paletteIdToDelete, setPaletteIdToDelete] = useState(null)
-  const [paletteIdToRename, setPaletteIdToRename] = useState(null)
+  const [paletteToRename, setPaletteToRename] = useState(null)
+  const alert = useAlert()
   const { loading, getAllPalettes, deletePalette, updatePalette } = useApi()
 
   useEffect(() => {
@@ -30,41 +34,48 @@ const SavedPalettesSection = ({ handleChangeSection }) => {
         const newPalettesList = palettesList.filter(palette => paletteIdToDelete !== palette.objectId)
         setPalettesList(newPalettesList)
         setDeletePaletteModalOpen(false)
+        alert.show('Palette deleted')
       }
     })
   }
 
   const handleRenamePalette = (title) => {
-    updatePalette(paletteIdToRename, { title }).then(res => {
-      if (res?.result === 'success') {
-        const newPalettesList = [...palettesList]
-        const updatingPaletteIndex = palettesList.findIndex(palette => paletteIdToRename === palette.objectId)
-        newPalettesList[updatingPaletteIndex] = {...newPalettesList[updatingPaletteIndex], title}
+    if (!!paletteToRename) {
+      updatePalette(paletteToRename?.objectId, { title }).then(res => {
+        if (res?.result === 'success') {
+          const newPalettesList = [...palettesList]
+          const updatingPaletteIndex = palettesList.findIndex(palette => paletteToRename?.objectId === palette.objectId)
+          newPalettesList[updatingPaletteIndex] = {...newPalettesList[updatingPaletteIndex], title}
 
-        setPalettesList(newPalettesList)
-        setRenamePaletteModalOpen(false)
-      }
-    })
+          setPalettesList(newPalettesList)
+          setRenamePaletteModalOpen(false)
+          alert.show('Palette updated')
+        }
+      })
+    }
   }
 
-  const handleRenamePaletteModalOpen = (id, closePopover) => () => {
-    setPaletteIdToRename(id)
+  const handleRenamePaletteModalOpen = (palette) => (closePopover) => {
+    setPaletteToRename(palette)
     setRenamePaletteModalOpen(true)
     closePopover()
   }
   const handleRenamePaletteModalClose = () => {
-    setPaletteIdToRename(null)
+    setPaletteToRename(null)
     setRenamePaletteModalOpen(false)
   }
 
-  const handleDeletePaletteModalOpen = (id, close) => () => {
+  const handleDeletePaletteModalOpen = (id) => (closePopover) => {
     setPaletteIdToDelete(id)
     setDeletePaletteModalOpen(true)
-    close()
+    closePopover()
   }
   const handleDeletePaletteModalClose = () => {
     setDeletePaletteModalOpen(false)
     setPaletteIdToDelete(null)
+  }
+  const handleEditColors = (palette) => () => {
+    navigate(`make-palette`, { state: { paletteId: palette.objectId, backUrl: '/saved' } })
   }
 
   return (
@@ -75,48 +86,47 @@ const SavedPalettesSection = ({ handleChangeSection }) => {
         onCancel={handleDeletePaletteModalClose}
         onDelete={handleDeletePalette}
       />
-      <RenamePaletteModal
+      <SavePaletteModal
         open={renamePaletteModalOpen}
         onClose={handleRenamePaletteModalClose}
         onCancel={handleRenamePaletteModalClose}
         onComplete={handleRenamePalette}
+        title={paletteToRename?.title || ''}
       />
       {palettesList.map((palette, index) => {
         return (
           <div
             key={index}
             className={'saved-palettes-palette'}
-            onClick={() => handleChangeSection('get-palette', { selectedPalette: palette.colors })}
+            onClick={() => {
+              navigate(
+                `coloring`,
+                {
+                  state: { palette, backUrl: '/saved' }
+                }
+              )
+            }}
           >
             <div className={'saved-palettes-palette-title'}>{palette.title}</div>
             <div className={'saved-palettes-palette-content'}>
               {palette.colors.map(color => {
                 return (
                   <div
-                    key={color}
+                    key={color + Math.random()}
                     className={'saved-palettes-palette-content-color'}
                     style={{ background: color }}
                   />
                 )
               })}
-              <Popover position={'left'} trigger={<Icon name={'Dots'} />}>
-                {close => (
-                  <div className={'saved-palettes-palette-content-popover-menu'}>
-                    <div
-                      className={'saved-palettes-palette-content-popover-menu-item'}
-                      onClick={handleRenamePaletteModalOpen(palette.objectId, close)}
-                    >
-                      Rename palette
-                    </div>
-                    <div
-                      className={'saved-palettes-palette-content-popover-menu-item'}
-                      onClick={handleDeletePaletteModalOpen(palette.objectId, close)}
-                    >
-                      Delete palette
-                    </div>
-                  </div>
-                )}
-              </Popover>
+              <MenuPopover
+                position={'left'}
+                trigger={<Icon name={'Dots'} />}
+                menu={[
+                  { title: 'Edit palette', onClick: handleRenamePaletteModalOpen(palette) },
+                  { title: 'Edit colors', onClick: handleEditColors(palette) },
+                  { title: 'Delete palette', onClick: handleDeletePaletteModalOpen(palette.objectId) },
+                ]}
+              />
             </div>
           </div>
         )

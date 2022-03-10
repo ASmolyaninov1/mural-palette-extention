@@ -9,7 +9,7 @@ import './MiniPaletteList.css'
  */
 
 const MiniPaletteList = ({ paletteList, selectedColor, handleSelect }) => {
-  const handleSelectColor = (color) => handleSelect && handleSelect(color)
+  const handleSelectColor = (color) => () => handleSelect && handleSelect(color)
 
   return (
     <div className={'mini-palette-list'}>

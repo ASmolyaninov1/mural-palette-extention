@@ -1,29 +1,19 @@
 import React, { useState, useEffect } from 'react'
 import ColorThief from "color-thief-browser"
+import { navigate } from '@reach/router'
 
 import { useApi, useJoinImages } from "hooks"
-import { MiniPaletteList, PaletteList, SavePalettePopover, TextAndFileInput } from "components"
-import { ArrowIcon, PlusIcon } from "icons"
+import { PaletteList, SavePalettePopover, TextAndFileInput } from "components"
 import { fromRGBToHex } from 'helpers'
 
 import './GetPaletteSection.css'
 
-const GetPaletteSection = ({ sectionProps = {} }) => {
+const GetPaletteSection = () => {
   const [brandPalette, setBrandPalette] = useState([])
   const [brandUrl, setBrandUrl] = useState('https://facebook.com')
   const [file, setFile] = useState(null)
-  const [selectedColor, setSelectedColor] = useState(null)
   const [joinedImage, joinImages] = useJoinImages()
   const { loading, getPdfScreenshot, getSiteScreenshot, createPalette } = useApi()
-
-  useEffect(() => {
-    const { selectedPalette } = sectionProps
-
-    if (selectedPalette) {
-      setBrandPalette(selectedPalette)
-      setSelectedColor(selectedPalette[0])
-    }
-  }, [])
 
   useEffect(() => {
     if (!!joinedImage) {
@@ -32,24 +22,6 @@ const GetPaletteSection = ({ sectionProps = {} }) => {
       img.onload = catchColor
     }
   }, [joinedImage])
-
-  const handlePaintWidgetBorder = async () => {
-    const selectedWidgetsList = await window.muralSdk.selectionSdk.list()
-    if (selectedWidgetsList.length) {
-      selectedWidgetsList.forEach(selectedWidget => {
-        window.muralSdk.widgets.set.border.style(selectedWidget.id, 'solid')
-        window.muralSdk.widgets.set.border.color(selectedWidget.id, selectedColor)
-      })
-    }
-  }
-  const handlePaintWidgetBackground = async () => {
-    const selectedWidgetsList = await window.muralSdk.selectionSdk.list()
-    if (selectedWidgetsList.length) {
-      selectedWidgetsList.forEach(selectedWidget => {
-        window.muralSdk.widgets.set.background.color(selectedWidget.id, selectedColor)
-      })
-    }
-  }
 
   function catchColor() {
     const colorThief = new ColorThief()
@@ -60,9 +32,17 @@ const GetPaletteSection = ({ sectionProps = {} }) => {
   const handleInputChange = (e) => {
     setBrandUrl(e.currentTarget.value)
   }
-  const handleSelectColor = (color) => async () => {
-    setSelectedColor(color)
+  const handleSelectColor = (color) => {
+    navigate(
+      'coloring',
+      {
+        state: {
+          palette: { title: `Palette from ${brandUrl}`, colors: brandPalette },
+          color
+        }
+      })
   }
+
   const handleInputKeyDown = (e) => {
     const keyCode = e.key
     if (keyCode === 'Enter') {
@@ -120,62 +100,31 @@ const GetPaletteSection = ({ sectionProps = {} }) => {
     createPalette({ colors: brandPalette, title })
   }
 
-  const renderMain = () => {
-    return (
-      <>
-        <TextAndFileInput
-          fileInputProps={{ onChange: handleSetFile, onRemoveFile: handleRemoveFile }}
-          textInputProps={{ onChange: handleInputChange, onKeyDown: handleInputKeyDown, defaultValue: brandUrl }}
-          file={file}
-          buttonProps={{
-            loading: loading,
-            onClick: handleGetPaletteClick,
-            text: 'Get palette'
-          }}
-          disabled={!brandUrl || loading}
-        />
-        {!!brandPalette.length && (
-          <div
-            className={'get-palette-save-hint'}
-          >
-            Liked this palette? You can{' '}
-            <SavePalettePopover handleSave={handleCreatePalette} />{' '}
-            it.
-          </div>
-        )}
-        <PaletteList paletteList={brandPalette} handleSelect={handleSelectColor} selectedColor={selectedColor} />
-      </>
-    )
-  }
-  const renderColoringMode = () => {
-    return (
-      <>
-        <div>
-          <div className={'get-palette-coloring-mode-back'} onClick={() => setSelectedColor(null)}>
-            <ArrowIcon />
-            <div>Back</div>
-          </div>
-          <MiniPaletteList paletteList={brandPalette} handleSelect={handleSelectColor} selectedColor={selectedColor} />
-          <div className={'get-palette-coloring-mode-type-list'}>
-            <div className={'get-palette-coloring-mode-type'}>
-              <div>Fill</div>
-              <div className={'get-palette-coloring-mode-type-icon'} onClick={handlePaintWidgetBackground}>
-                <PlusIcon />
-              </div>
-            </div>
-            <div className={'get-palette-coloring-mode-type'}>
-              <div>Border</div>
-              <div className={'get-palette-coloring-mode-type-icon'} onClick={handlePaintWidgetBorder}>
-                <PlusIcon />
-              </div>
-            </div>
-          </div>
+  return (
+    <>
+      <TextAndFileInput
+        fileInputProps={{ onChange: handleSetFile, onRemoveFile: handleRemoveFile }}
+        textInputProps={{ onChange: handleInputChange, onKeyDown: handleInputKeyDown, defaultValue: brandUrl }}
+        file={file}
+        buttonProps={{
+          loading: loading,
+          onClick: handleGetPaletteClick,
+          text: 'Get palette'
+        }}
+        disabled={!brandUrl || loading}
+      />
+      {!!brandPalette.length && (
+        <div
+          className={'get-palette-save-hint'}
+        >
+          Liked this palette? You can{' '}
+          <SavePalettePopover handleSave={handleCreatePalette} />{' '}
+          it.
         </div>
-      </>
-    )
-  }
-
-  return selectedColor ? renderColoringMode() : renderMain()
+      )}
+      <PaletteList paletteList={brandPalette} handleSelect={handleSelectColor} />
+    </>
+  )
 }
 
 export default GetPaletteSection

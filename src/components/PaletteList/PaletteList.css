@@ -29,11 +29,6 @@
   cursor: pointer;
 }
 
-.palette-list-item-color[data-selected="true"] {
-  border: 2px solid #ffffff;
-  outline: 1px solid #EA3368;
-}
-
 .palette-list-item-info {
   display: flex;
   justify-content: space-between;

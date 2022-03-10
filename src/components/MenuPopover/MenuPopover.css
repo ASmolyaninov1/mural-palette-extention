@@ -1,0 +1,28 @@
+.menu-popover {
+  margin: -16px;
+}
+
+.menu-popover-item {
+  padding: 12px 16px;
+  white-space: nowrap;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.menu-popover-item:hover {
+  background-color: #FBFBFB;
+}
+
+.menu-popover-item:not(:last-of-type) {
+  border-bottom: 1px solid #F4F4F4;
+}
+
+.menu-popover-item:first-of-type {
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+}
+
+.menu-popover-item:last-of-type {
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+}

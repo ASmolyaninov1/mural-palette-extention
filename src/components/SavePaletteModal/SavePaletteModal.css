@@ -1,4 +1,4 @@
-.rename-palette-modal {
+.save-palette-modal {
   width: 100%;
   padding: 16px;
   border-radius: 10px;
@@ -6,12 +6,12 @@
   background-color: #ffffff;
 }
 
-.rename-palette-modal-title {
+.save-palette-modal-title {
   margin-bottom: 10px;
   font-weight: 600;
 }
 
-.rename-palette-modal-input {
+.save-palette-modal-input {
   width: 100%;
   border: 1px solid #BABABA;
   outline: none;
@@ -22,19 +22,24 @@
   font-size: 12px;
 }
 
-.rename-palette-modal-input::placeholder {
+.save-palette-modal-input::placeholder {
   color: #848484
 }
 
-.rename-palette-modal-actions {
+.save-palette-modal-actions {
   display: flex;
   justify-content: flex-end;
+  margin-top: 25px;
 }
 
-.rename-palette-modal-actions .button {
+.save-palette-modal-actions .button {
   margin-bottom: 0;
 }
 
-.rename-palette-modal-actions .button:not(:last-of-type) {
+.save-palette-modal-actions .button:not(:last-of-type) {
   margin-right: 12px;
+}
+
+.save-palette-modal-access-action div {
+  white-space: nowrap;
 }

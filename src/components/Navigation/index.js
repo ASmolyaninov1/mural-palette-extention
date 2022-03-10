@@ -1,21 +1,26 @@
 import React from 'react'
+import { Link } from '@reach/router'
 
 import './Navigation.css'
 
-// item = { title: string, onClick: (e: MouseEvent) => void, id: string }
-const Navigation = ({ items, selectedItemId }) => {
+// item = { title: string, path: string }
+const Navigation = ({ items }) => {
   return (
     <div className={'navigation-wrapper'}>
       {items.map(item => {
         return (
-          <div
+          <Link
             className={'navigation-item'}
-            key={item.id}
-            data-selected={selectedItemId === item.id}
-            onClick={item.onClick}
+            key={item.path}
+            to={item.path}
+            getProps={({ isCurrent }) => {
+              return {
+                className: isCurrent ? 'navigation-item navigation-item-active' : 'navigation-item'
+              }
+            }}
           >
             {item.title}
-          </div>
+          </Link>
         )
       })}
     </div>

@@ -1,14 +1,14 @@
 export const sections = [
   {
     title: 'Get palette',
-    id: 'get-palette'
+    path: '/'
   },
   {
     title: 'Saved',
-    id: 'saved'
+    path: '/saved'
   },
   {
     title: 'Make palette',
-    id: 'make-palette'
+    path: '/make-palette'
   }
 ]
