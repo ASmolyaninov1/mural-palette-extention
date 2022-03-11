@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useContext, useEffect, useMemo, useState } from 'react'
 import { HexColorPicker } from "react-colorful"
 import { useLocation, navigate } from '@reach/router'
 import { useAlert } from 'react-alert'
@@ -6,60 +6,65 @@ import { useAlert } from 'react-alert'
 import { copyToClipboard } from "helpers"
 import { SavePalettePopover, Icon } from "components"
 import { useApi } from "hooks"
+import PaletteContext from "PaletteContext"
 
 import './MakePaletteSection.css'
 
-const MakePaletteSection = () => {
+const MakePaletteSection = ({ id }) => {
   const [currentColorId, setCurrentColorId] = useState(0)
-  const [palette, setPalette] = useState([{hex: '#000000', id: 0}])
-  const [paletteTitle, setPaletteTitle] = useState('')
+  const [editableColors, setEditableColors] = useState([{hex: '#000000', id: 0}])
+  const [palette, setPalette] = useState(null)
   const location = useLocation()
   const alert = useAlert()
-  const paletteId = location.state?.paletteId
-  const colors = location.state?.colors
-  const title = location.state?.title
   const backUrl = location.state?.backUrl
   const { createPalette, getPalette, updatePalette } = useApi()
+  const { cachedPalette, setCachedPalette } = useContext(PaletteContext)
 
-  const sectionMode = !!paletteId ? 'edit_saved' : !!colors ? 'edit_unsaved' : 'make'
+  const sectionMode = id === 'unsaved' ? 'edit_unsaved' : !id ? 'make' : 'edit_saved'
 
   useEffect(() => {
-    if (sectionMode === 'edit_saved') {
-      getPalette(paletteId).then(data => {
-        const paletteData = data?.result
-        handleSetColors(paletteData.colors || [])
-        setPaletteTitle(paletteData.title)
-      })
-    }
-    if (sectionMode === 'edit_unsaved') {
-      handleSetColors(colors)
-      setPaletteTitle(title)
+    switch (sectionMode) {
+      case 'edit_saved':
+        getPalette(id).then(data => {
+          const paletteData = data?.result
+          handleSetColors(paletteData.colors || [])
+          setPalette(paletteData)
+        })
+        break
+      case 'edit_unsaved':
+        handleSetColors(cachedPalette.colors)
+        setPalette({ title: cachedPalette.title, colors: cachedPalette.colors })
+        break
+      default:
+        setPalette({ title: '' })
     }
   }, [sectionMode])
 
-  const currentHexColor = useMemo(() => palette.find(color => color.id === currentColorId)?.hex, [palette, currentColorId])
+  const currentHexColor = useMemo(() => (
+    editableColors.find(color => color.id === currentColorId)?.hex
+  ), [editableColors, currentColorId])
 
   const handleSetColors = (colors) => {
     const convertedColors = colors
       .reverse()
       .map((color, index) => ({ id: index, hex: color }))
       .reverse()
-    setPalette(convertedColors)
+    setEditableColors(convertedColors)
   }
 
   const handleChangeColor = (hex) => {
-    const newPalette = palette.map(color => ({
+    const newPalette = editableColors.map(color => ({
       ...color,
       hex: color.id === currentColorId ? hex : color.hex
     }))
-    setPalette(newPalette)
+    setEditableColors(newPalette)
   }
   const handleCreateColor = () => {
-    const newColorId = palette[0].id + 1
-    const newPalette = [{ id: newColorId, hex: '#000000' }, ...palette]
+    const newColorId = editableColors[0].id + 1
+    const newPalette = [{ id: newColorId, hex: '#000000' }, ...editableColors]
 
     setCurrentColorId(newColorId)
-    setPalette(newPalette)
+    setEditableColors(newPalette)
   }
   const handleSelectColor = (id) => () => {
     setCurrentColorId(id)
@@ -67,40 +72,36 @@ const MakePaletteSection = () => {
   const handleDeleteColor = (e) => {
     e.target.className = 'make-palette-preview-delete-color-area'
     const colorId = e.dataTransfer.getData('colorId')
-    const newPalette = palette.filter((color) => color.id !== +colorId)
+    const newPalette = editableColors.filter((color) => color.id !== +colorId)
     if (currentColorId === +colorId) {
       setCurrentColorId(newPalette[0].id)
     }
-    setPalette(newPalette)
+    setEditableColors(newPalette)
   }
   const handleSavePalette = (title) => {
-    const hexPalette = palette.map(color => color.hex)
+    const hexPalette = editableColors.map(color => color.hex)
     switch (sectionMode) {
       case 'edit_saved':
-        updatePalette(paletteId, { colors: hexPalette, title }).then(() => {
+        updatePalette(id, { colors: hexPalette, title }).then(() => {
           alert.show('Palette updated')
           navigate(backUrl || '/')
         })
         break
       case 'edit_unsaved':
+        setCachedPalette({ title: palette?.title || '', colors: hexPalette })
+        navigate(`/coloring/unsaved`)
+        break
+      case 'make':
         createPalette({ colors: hexPalette, title }).then(() => {
           alert.show('Palette created')
         })
-        setPalette([{ hex: '#000000', id: 0 }])
+        setEditableColors([{ hex: '#000000', id: 0 }])
         setCurrentColorId(0)
-        break
-      case 'make':
-        navigate(
-          '/coloring',
-          {
-            state: {
-              palette: { title, colors: hexPalette }
-            }
-          }
-        )
         break
     }
   }
+
+  if (!palette) return 'Loading...'
 
   return (
     <div className={'make-palette'}>
@@ -113,18 +114,22 @@ const MakePaletteSection = () => {
       </div>
       <div className={'make-palette-preview-header'}>
         <div className={'make-palette-preview-header-title'}>Your new palette</div>
-        <SavePalettePopover
-          handleSave={handleSavePalette}
-          position={'left'}
-          triggerText={sectionMode === 'make' ? 'save' : 'Save changes'}
-          defaultTitle={paletteTitle}
-        />
+        {sectionMode === 'edit_unsaved' ? (
+          <span className={'save-palette-popover-trigger'} onClick={handleSavePalette}>Save changes</span>
+        ) : (
+          <SavePalettePopover
+            handleSave={handleSavePalette}
+            position={'left'}
+            triggerText={sectionMode === 'make' ? 'save' : 'Save changes'}
+            defaultTitle={palette.title}
+          />
+        )}
       </div>
       <div className={'make-palette-preview-content'}>
-        {palette.length < 8 && (
+        {editableColors.length < 8 && (
           <Icon name={'Plus'} onClick={handleCreateColor} className={'make-palette-preview-content-plus-icon'} />
         )}
-        {palette.map(color => (
+        {editableColors.map(color => (
           <div
             key={color.id}
             data-selected={color.id === currentColorId}
@@ -134,7 +139,7 @@ const MakePaletteSection = () => {
             onDragStart={e => {
               e.dataTransfer.setData('colorId', color.id)
             }}
-            draggable={palette.length > 1}
+            draggable={editableColors.length > 1}
           />
         ))}
       </div>

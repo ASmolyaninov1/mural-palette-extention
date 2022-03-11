@@ -3,7 +3,7 @@ import { navigate } from '@reach/router'
 import { useAlert } from "react-alert"
 
 import { useApi } from "hooks"
-import { Popover, DeletePaletteModal, SavePaletteModal, Icon, MenuPopover } from "components"
+import { DeletePaletteModal, SavePaletteModal, Icon, MenuPopover } from "components"
 
 import './SavedPalettesSection.css'
 
@@ -75,7 +75,7 @@ const SavedPalettesSection = () => {
     setPaletteIdToDelete(null)
   }
   const handleEditColors = (palette) => () => {
-    navigate(`make-palette`, { state: { paletteId: palette.objectId, backUrl: '/saved' } })
+    navigate(`make-palette/${palette.objectId}`, { state: { backUrl: '/saved' } })
   }
 
   return (
@@ -99,12 +99,7 @@ const SavedPalettesSection = () => {
             key={index}
             className={'saved-palettes-palette'}
             onClick={() => {
-              navigate(
-                `coloring`,
-                {
-                  state: { palette, backUrl: '/saved' }
-                }
-              )
+              navigate(`coloring/${palette.objectId}`, {state: { backUrl: '/saved' }})
             }}
           >
             <div className={'saved-palettes-palette-title'}>{palette.title}</div>

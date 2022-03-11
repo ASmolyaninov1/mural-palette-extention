@@ -1,34 +1,47 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useContext } from 'react'
 import { useLocation, navigate } from '@reach/router'
 import { useAlert } from 'react-alert'
 import { ArrowIcon, PlusIcon } from "icons"
 import { MenuPopover, MiniPaletteList, Icon, DeletePaletteModal, SavePaletteModal } from "components"
 import { useApi } from 'hooks'
+import PaletteContext from 'PaletteContext'
 
 import './ColoringSection.css'
 
-const ColoringSection = () => {
+const ColoringSection = ({ id }) => {
   const [selectedColor, setSelectedColor] = useState(null)
   const [deletePaletteModalOpen, setDeletePaletteModalOpen] = useState(false)
   const [savePaletteModalOpen, setSavePaletteModalOpen] = useState(false)
-  const [palette, setPalette] = useState({})
+  const [palette, setPalette] = useState(null)
   const location = useLocation()
   const alert = useAlert()
-  const { deletePalette, updatePalette } = useApi()
+  const { getPalette, deletePalette, updatePalette, createPalette } = useApi()
+  const { cachedPalette, setCachedPalette } = useContext(PaletteContext)
 
+  const isUnsavedPalette = id === 'unsaved'
   const backUrl = location.state?.backUrl
-  const isPaletteSaved = palette?.objectId
 
   useEffect(() => {
-    const currentPalette = location.state?.palette
-    const color = location.state?.color
-    setPalette(currentPalette)
-    if (color) {
-      setSelectedColor(color)
+    if (isUnsavedPalette) {
+      setPalette(cachedPalette)
     } else {
-      setSelectedColor(currentPalette.colors[0])
+      getPalette(id).then(res => {
+        if (!res.result) navigate(backUrl || '/')
+        setPalette(res.result)
+      })
     }
   }, [])
+
+  useEffect(() => {
+    if (palette) {
+      const color = location.state?.color
+      if (color) {
+        setSelectedColor(color)
+      } else {
+        setSelectedColor(palette.colors[0])
+      }
+    }
+  }, [palette])
 
   const handleDeletePalette = () => {
     deletePalette(palette.objectId).then((res) => {
@@ -40,17 +53,29 @@ const ColoringSection = () => {
     })
   }
 
-  const handleRenamePalette = (title) => {
-    updatePalette(palette.objectId, { title }).then(res => {
-      if (res?.result === 'success') {
-        setPalette({
-          ...palette,
-          title
-        })
-        setSavePaletteModalOpen(false)
-        alert.show('Palette updated')
-      }
-    })
+  const handleSavePalette = (title) => {
+    if (isUnsavedPalette) {
+      createPalette({ title, colors: palette.colors }).then(res => {
+        if (res?.result?.objectId) {
+          setCachedPalette({})
+          setSavePaletteModalOpen(false)
+          alert.show('Palette saved')
+          setPalette(res.result)
+          navigate(`/coloring/${res.result.objectId}`)
+        }
+      })
+    } else {
+      updatePalette(palette.objectId, { title }).then(res => {
+        if (res?.result === 'success') {
+          setPalette({
+            ...palette,
+            title
+          })
+          setSavePaletteModalOpen(false)
+          alert.show('Palette updated')
+        }
+      })
+    }
   }
 
   const handleSavePaletteModalOpen = (closePopover) => {
@@ -70,10 +95,10 @@ const ColoringSection = () => {
   }
 
   const handleEditColors = () => {
-    if (isPaletteSaved) {
-      navigate(`make-palette`, { state: { paletteId: palette.objectId } })
+    if (isUnsavedPalette) {
+      navigate(`/make-palette/unsaved`)
     } else {
-      navigate(`make-palette`, { state: { title: palette.title, colors: palette.colors } })
+      navigate(`/make-palette/${palette.objectId}`)
     }
   }
 
@@ -92,7 +117,7 @@ const ColoringSection = () => {
       <MenuPopover
         position={'left'}
         trigger={<Icon name={'Dots'} />}
-        menu={isPaletteSaved ? savedPaletteMenu : notSavedPaletteMenu}
+        menu={isUnsavedPalette ? notSavedPaletteMenu : savedPaletteMenu}
       />
     )
   }
@@ -115,7 +140,7 @@ const ColoringSection = () => {
     }
   }
 
-  if (!location.state?.palette) navigate('/')
+  if (!palette) return 'Loading...'
 
   return (
     <div>
@@ -129,16 +154,20 @@ const ColoringSection = () => {
         open={savePaletteModalOpen}
         onClose={handleSavePaletteModalClose}
         onCancel={handleSavePaletteModalClose}
-        onComplete={handleRenamePalette}
+        onComplete={handleSavePalette}
         title={palette?.title || ''}
       />
       <div className={'coloring-section-back'} onClick={() => navigate(backUrl || '/')}>
         <ArrowIcon />
         <div>Back</div>
       </div>
-      <div className={'coloring-section-title'}>{palette?.title || ''}</div>
+      <div className={'coloring-section-title'}>{palette.title || ''}</div>
       <div className={'coloring-section-colors-list'}>
-        <MiniPaletteList paletteList={palette?.colors || []} handleSelect={setSelectedColor} selectedColor={selectedColor} />
+        <MiniPaletteList
+          paletteList={palette.colors || []}
+          handleSelect={setSelectedColor}
+          selectedColor={selectedColor}
+        />
         {renderMenuPopover()}
       </div>
       <div className={'coloring-section-type-list'}>

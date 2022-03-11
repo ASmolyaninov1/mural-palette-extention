@@ -41,3 +41,11 @@
   margin-bottom: 0;
   justify-self: flex-end;
 }
+
+.save-palette-popover-access-action div {
+  white-space: nowrap;
+}
+
+.save-palette-popover-access-action:last-of-type {
+  margin-bottom: 20px;
+}

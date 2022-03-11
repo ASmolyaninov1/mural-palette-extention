@@ -1,19 +1,22 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import ColorThief from "color-thief-browser"
 import { navigate } from '@reach/router'
 
 import { useApi, useJoinImages } from "hooks"
 import { PaletteList, SavePalettePopover, TextAndFileInput } from "components"
 import { fromRGBToHex } from 'helpers'
+import PaletteContext from "PaletteContext"
 
 import './GetPaletteSection.css'
 
 const GetPaletteSection = () => {
+  const [paletteId, setPaletteId] = useState(null)
   const [brandPalette, setBrandPalette] = useState([])
   const [brandUrl, setBrandUrl] = useState('https://facebook.com')
   const [file, setFile] = useState(null)
   const [joinedImage, joinImages] = useJoinImages()
   const { loading, getPdfScreenshot, getSiteScreenshot, createPalette } = useApi()
+  const { setCachedPalette } = useContext(PaletteContext)
 
   useEffect(() => {
     if (!!joinedImage) {
@@ -33,14 +36,15 @@ const GetPaletteSection = () => {
     setBrandUrl(e.currentTarget.value)
   }
   const handleSelectColor = (color) => {
-    navigate(
-      'coloring',
-      {
-        state: {
-          palette: { title: `Palette from ${brandUrl}`, colors: brandPalette },
-          color
-        }
+    if (paletteId) {
+      navigate(`/coloring/${paletteId}`, {state: { color }})
+    } else {
+      setCachedPalette({
+        colors: brandPalette,
+        title: `Palette from ${brandUrl}`
       })
+      navigate('/coloring/unsaved', {state: { color }})
+    }
   }
 
   const handleInputKeyDown = (e) => {
@@ -97,7 +101,11 @@ const GetPaletteSection = () => {
   const handleRemoveFile = () => setFile(null)
 
   const handleCreatePalette = (title) => {
-    createPalette({ colors: brandPalette, title })
+    createPalette({ colors: brandPalette, title }).then(res => {
+      if (res?.result?.objectId) {
+        setPaletteId(res.result.objectId)
+      }
+    })
   }
 
   return (
