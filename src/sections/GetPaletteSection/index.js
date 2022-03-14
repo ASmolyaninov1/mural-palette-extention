@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react'
 import ColorThief from "color-thief-browser"
 import { navigate } from '@reach/router'
+import { useAlert } from 'react-alert'
 
 import { useApi, useJoinImages } from "hooks"
 import { PaletteList, SavePalettePopover, TextAndFileInput } from "components"
@@ -17,6 +18,7 @@ const GetPaletteSection = () => {
   const [joinedImage, joinImages] = useJoinImages()
   const { loading, getPdfScreenshot, getSiteScreenshot, createPalette } = useApi()
   const { setCachedPalette } = useContext(PaletteContext)
+  const alert = useAlert()
 
   useEffect(() => {
     if (!!joinedImage) {
@@ -100,10 +102,11 @@ const GetPaletteSection = () => {
   const handleSetFile = (e) => setFile(e?.target?.files[0] || null)
   const handleRemoveFile = () => setFile(null)
 
-  const handleCreatePalette = (title) => {
-    createPalette({ colors: brandPalette, title }).then(res => {
+  const handleCreatePalette = (title, access) => {
+    createPalette({ colors: brandPalette, title, access }).then(res => {
       if (res?.result?.objectId) {
         setPaletteId(res.result.objectId)
+        alert.show('Palette created')
       }
     })
   }
@@ -121,7 +124,7 @@ const GetPaletteSection = () => {
         }}
         disabled={!brandUrl || loading}
       />
-      {!!brandPalette.length && (
+      {!!brandPalette.length && !paletteId && (
         <div
           className={'get-palette-save-hint'}
         >

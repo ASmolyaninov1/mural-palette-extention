@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import { Button, ModalWrapper, Radio } from "components"
+import { ModalWrapper, PaletteAccessRadio } from "components"
+import { Button } from 'elements'
 
 import './SavePaletteModal.css'
 
@@ -15,8 +16,8 @@ const SavePaletteModal = ({ open, onClose, onCancel, onComplete, title: propsTit
     const value = e.target.value
     setTitle(value)
   }
-  const handleComplete = () => onComplete(title)
-  const handleChangeAccess = (value) => () => setAccess(value)
+  const handleComplete = () => onComplete(title, access)
+  const handleChangeAccess = (value) => setAccess(value)
 
   return (
     <ModalWrapper open={open} onClose={onClose}>
@@ -28,30 +29,7 @@ const SavePaletteModal = ({ open, onClose, onCancel, onComplete, title: propsTit
           onChange={handleChangeTitle}
           value={title}
         />
-        <div className={'save-palette-modal-title'}>
-          Who can use this palette?
-        </div>
-        <div className={'save-palette-modal-access-action'}>
-          <Radio
-            label={'Only me'}
-            checked={access === 'me'}
-            onChange={handleChangeAccess('me')}
-          />
-        </div>
-        <div className={'save-palette-modal-access-action'}>
-          <Radio
-            label={'Members of workspace'}
-            checked={access === 'workspace'}
-            onChange={handleChangeAccess('workspace')}
-          />
-        </div>
-        <div className={'save-palette-modal-access-action'}>
-          <Radio
-            label={'Members of company'}
-            checked={access === 'company'}
-            onChange={handleChangeAccess('company')}
-          />
-        </div>
+        <PaletteAccessRadio access={access} onChange={handleChangeAccess} />
         <div className={'save-palette-modal-actions'}>
           <Button size={'md'} type={'secondary'} onClick={onCancel}>Cancel</Button>
           <Button size={'md'} onClick={handleComplete}>Save palette</Button>

@@ -1,0 +1,33 @@
+.checkbox {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 17px;
+  max-width: 17px;
+  min-height: 17px;
+  max-height: 17px;
+  border-radius: 4px;
+  border: 1px solid #BABABA;
+  cursor: pointer;
+}
+
+.checkbox-wrapper > input {
+  display: none;
+}
+
+.checkbox-wrapper svg {
+  display: none;
+}
+
+.checkbox-wrapper > input:checked + .checkbox > svg {
+  display: block;
+}
+
+.checkbox:hover {
+  border-color: #EA3368;
+}
+
+.checkbox-wrapper > input:checked + .checkbox {
+  background-color: #F8DAE2;
+  border-color: #EA3368;
+}

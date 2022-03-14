@@ -3,7 +3,6 @@ import './Notification.css'
 
 const Notification = ({ style, options, message, close }) => {
   useEffect(() => {
-    console.log('check')
     setTimeout(close, 2000)
   }, [])
   return (

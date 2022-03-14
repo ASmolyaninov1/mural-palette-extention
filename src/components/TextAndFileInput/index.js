@@ -1,6 +1,6 @@
 import React from 'react'
 import { CrossIcon } from "icons"
-import { Button } from 'components'
+import { Button } from 'elements'
 
 import './TextAndFileInput.css'
 

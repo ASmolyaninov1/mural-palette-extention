@@ -16,14 +16,16 @@
 }
 
 .coloring-section-title {
+  font-weight: 600;
   margin-bottom: 20px;
 }
 
-.coloring-section-type-list {
+.coloring-section-actions-list {
   margin-top: 30px;
+  margin-bottom: 30px;
 }
 
-.coloring-section-type {
+.coloring-section-action {
   display: flex;
   justify-content: space-between;
   padding: 16px 0;
@@ -31,25 +33,25 @@
   color: #888888;
 }
 
-.coloring-section-type:last-of-type {
-  border-bottom: 1px solid #F4F4F4;
-}
-
-.coloring-section-type-icon {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 20px;
-  height: 20px;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.coloring-section-type-icon:hover {
-  background: #F0F0F0;
-}
-
 .coloring-section-colors-list {
   display: flex;
   justify-content: space-between;
+}
+
+.coloring-section-action-access {
+  color: #888888;
+}
+
+.coloring-section-action-access-btn {
+  color: #EA3368;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.coloring-section-action-access-btn:hover {
+  color: #CE284F;
+}
+
+.coloring-section-action-access-btn:active {
+  color: #AC1D3F;
 }

@@ -1,5 +1,5 @@
 import React from 'react'
-import { Popover } from "components"
+import { Popover } from "elements"
 
 import './MenuPopover.css'
 

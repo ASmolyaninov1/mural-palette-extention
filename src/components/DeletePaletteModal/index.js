@@ -1,5 +1,6 @@
 import React from 'react'
-import { Button, ModalWrapper } from "components"
+import { ModalWrapper } from "components"
+import { Button } from 'elements'
 
 import './DeletePaletteModal.css'
 

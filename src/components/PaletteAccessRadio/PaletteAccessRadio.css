@@ -1,0 +1,13 @@
+.palette-access-title {
+  font-weight: 600;
+  white-space: nowrap;
+  margin-bottom: 14px;
+}
+
+.palette-access-action div {
+  white-space: nowrap;
+}
+
+.palette-access-action:last-of-type {
+  margin-bottom: 20px;
+}

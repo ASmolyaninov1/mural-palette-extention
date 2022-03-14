@@ -4,7 +4,8 @@ import { useLocation, navigate } from '@reach/router'
 import { useAlert } from 'react-alert'
 
 import { copyToClipboard } from "helpers"
-import { SavePalettePopover, Icon } from "components"
+import { SavePalettePopover } from "components"
+import { Icon } from 'elements'
 import { useApi } from "hooks"
 import PaletteContext from "PaletteContext"
 
@@ -78,11 +79,11 @@ const MakePaletteSection = ({ id }) => {
     }
     setEditableColors(newPalette)
   }
-  const handleSavePalette = (title) => {
+  const handleSavePalette = (title, access) => {
     const hexPalette = editableColors.map(color => color.hex)
     switch (sectionMode) {
       case 'edit_saved':
-        updatePalette(id, { colors: hexPalette, title }).then(() => {
+        updatePalette(id, { colors: hexPalette, title, access }).then(() => {
           alert.show('Palette updated')
           navigate(backUrl || '/')
         })
@@ -92,7 +93,7 @@ const MakePaletteSection = ({ id }) => {
         navigate(`/coloring/unsaved`)
         break
       case 'make':
-        createPalette({ colors: hexPalette, title }).then(() => {
+        createPalette({ colors: hexPalette, title, access }).then(() => {
           alert.show('Palette created')
         })
         setEditableColors([{ hex: '#000000', id: 0 }])

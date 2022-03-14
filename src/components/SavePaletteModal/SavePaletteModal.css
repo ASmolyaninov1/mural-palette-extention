@@ -39,7 +39,3 @@
 .save-palette-modal-actions .button:not(:last-of-type) {
   margin-right: 12px;
 }
-
-.save-palette-modal-access-action div {
-  white-space: nowrap;
-}

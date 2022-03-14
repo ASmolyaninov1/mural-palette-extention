@@ -1,9 +1,17 @@
 import React, { useEffect, useState, useContext } from 'react'
 import { useLocation, navigate } from '@reach/router'
 import { useAlert } from 'react-alert'
-import { ArrowIcon, PlusIcon } from "icons"
-import { MenuPopover, MiniPaletteList, Icon, DeletePaletteModal, SavePaletteModal } from "components"
+import { ArrowIcon } from 'icons'
+import {
+  MenuPopover,
+  MiniPaletteList,
+  DeletePaletteModal,
+  SavePaletteModal,
+  PaletteAccessRadio
+} from "components"
+import { Icon, Popover, Checkbox } from 'elements'
 import { useApi } from 'hooks'
+import { copyToClipboard, capitalize } from 'helpers'
 import PaletteContext from 'PaletteContext'
 
 import './ColoringSection.css'
@@ -22,6 +30,7 @@ const ColoringSection = ({ id }) => {
   const backUrl = location.state?.backUrl
 
   useEffect(() => {
+    setPalette(null)
     if (isUnsavedPalette) {
       setPalette(cachedPalette)
     } else {
@@ -53,9 +62,9 @@ const ColoringSection = ({ id }) => {
     })
   }
 
-  const handleSavePalette = (title) => {
+  const handleSavePalette = (title, access) => {
     if (isUnsavedPalette) {
-      createPalette({ title, colors: palette.colors }).then(res => {
+      createPalette({ title, colors: palette.colors, access }).then(res => {
         if (res?.result?.objectId) {
           setCachedPalette({})
           setSavePaletteModalOpen(false)
@@ -65,10 +74,11 @@ const ColoringSection = ({ id }) => {
         }
       })
     } else {
-      updatePalette(palette.objectId, { title }).then(res => {
+      updatePalette(palette.objectId, { title, access }).then(res => {
         if (res?.result === 'success') {
           setPalette({
             ...palette,
+            access,
             title
           })
           setSavePaletteModalOpen(false)
@@ -96,10 +106,29 @@ const ColoringSection = ({ id }) => {
 
   const handleEditColors = () => {
     if (isUnsavedPalette) {
-      navigate(`/make-palette/unsaved`)
+      navigate(`/make-palette/unsaved`, { state: { backUrl: '/coloring/unsaved' } })
     } else {
-      navigate(`/make-palette/${palette.objectId}`)
+      navigate(`/make-palette/${palette.objectId}`, { state: { backUrl: `/coloring/${palette.objectId}` } })
     }
+  }
+
+  const handleSetAsDefaultPalette = (isDefault) => {
+    setPalette({ ...palette, isDefault })
+    updatePalette(palette.objectId, { isDefault }).then(res => {
+      if (res?.result === 'success') {
+        alert.show('Palette updated')
+      }
+    })
+  }
+
+  const handleUpdateAccess = (access, closePopover) => {
+    setPalette({ ...palette, access })
+    updatePalette(palette.objectId, { access }).then(res => {
+      if (res?.result === 'success') {
+        alert.show('Palette updated')
+      }
+      closePopover()
+    })
   }
 
   const renderMenuPopover = () => {
@@ -170,20 +199,41 @@ const ColoringSection = ({ id }) => {
         />
         {renderMenuPopover()}
       </div>
-      <div className={'coloring-section-type-list'}>
-        <div className={'coloring-section-type'}>
-          <div>Fill</div>
-          <div className={'coloring-section-type-icon'} onClick={handlePaintWidgetBackground}>
-            <PlusIcon />
-          </div>
+      <div className={'coloring-section-actions-list'}>
+        <div className={'coloring-section-title'}>Available actions</div>
+        <div className={'coloring-section-action'}>
+          <div>{selectedColor}</div>
+          <Icon name={'Copy'} onClick={() => copyToClipboard(selectedColor)} />
         </div>
-        <div className={'coloring-section-type'}>
+        <div className={'coloring-section-action'}>
+          <div>Fill</div>
+          <Icon name={'Plus'} onClick={handlePaintWidgetBackground} />
+        </div>
+        <div className={'coloring-section-action'}>
           <div>Border</div>
-          <div className={'coloring-section-type-icon'} onClick={handlePaintWidgetBorder}>
-            <PlusIcon />
-          </div>
+          <Icon name={'Plus'} onClick={handlePaintWidgetBorder} />
         </div>
       </div>
+      {!isUnsavedPalette && (
+        <>
+          <div className={'coloring-section-actions-list'}>
+            <div className={'coloring-section-title'}>State of palette</div>
+            <div className={'coloring-section-action'}>
+              <div>Set as default</div>
+              <Checkbox defaultValue={palette.isDefault} onChange={handleSetAsDefaultPalette} />
+            </div>
+          </div>
+          <div className={'coloring-section-actions-list'}>
+            <div className={'coloring-section-title'}>Access to palette</div>
+            <div className={'coloring-section-action-access'}>
+              Who can use this palette?{' '}
+              <Popover trigger={<span className={'coloring-section-action-access-btn'}>{capitalize(palette.access)}</span>}>
+                {(close) => <PaletteAccessRadio access={palette.access} onChange={(access) => handleUpdateAccess(access, close)} />}
+              </Popover>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   )
 }

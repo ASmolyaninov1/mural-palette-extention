@@ -3,7 +3,8 @@ import { navigate } from '@reach/router'
 import { useAlert } from "react-alert"
 
 import { useApi } from "hooks"
-import { DeletePaletteModal, SavePaletteModal, Icon, MenuPopover } from "components"
+import { DeletePaletteModal, SavePaletteModal, MenuPopover } from "components"
+import { Icon } from 'elements'
 
 import './SavedPalettesSection.css'
 
@@ -39,9 +40,9 @@ const SavedPalettesSection = () => {
     })
   }
 
-  const handleRenamePalette = (title) => {
+  const handleRenamePalette = (title, access) => {
     if (!!paletteToRename) {
-      updatePalette(paletteToRename?.objectId, { title }).then(res => {
+      updatePalette(paletteToRename?.objectId, { title, access }).then(res => {
         if (res?.result === 'success') {
           const newPalettesList = [...palettesList]
           const updatingPaletteIndex = palettesList.findIndex(palette => paletteToRename?.objectId === palette.objectId)
@@ -93,6 +94,9 @@ const SavedPalettesSection = () => {
         onComplete={handleRenamePalette}
         title={paletteToRename?.title || ''}
       />
+      {palettesList.length === 0 && (
+        <div>There are no saved palettes...</div>
+      )}
       {palettesList.map((palette, index) => {
         return (
           <div

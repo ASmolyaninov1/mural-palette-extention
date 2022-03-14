@@ -4,7 +4,7 @@ import axios from "axios"
 const PROD_API_URL = 'https://dockerhost.forge-parse-server.c66.me:40140'
 const DEV_API_URL = 'http://localhost:1337'
 
-const API_URL = DEV_API_URL
+const API_URL = PROD_API_URL
 
 axios.interceptors.request.use(function (config) {
   return {
@@ -59,10 +59,10 @@ const useApi = () => {
 
   const createPalette = async palette => {
     try {
-      const { colors, title } = palette
+      const { colors, title, access } = palette
       const result = await axios.post(
         API_URL + '/parse/functions/createPalette',
-        { colors, title }
+        { colors, title, access }
       )
 
       return result?.data?.result
@@ -106,10 +106,13 @@ const useApi = () => {
     }
   }
 
-  const updatePalette = async (id, { colors = null, title = null }) => {
+  const updatePalette = async (id, { colors, title, access }) => {
     setLoading(true)
     try {
-      const result = await axios.post(API_URL + '/parse/functions/updatePalette', { id, colors, title })
+      const result = await axios.post(
+        API_URL + '/parse/functions/updatePalette',
+        { id, colors, title, access }
+      )
       setLoading(false)
       return result?.data?.result
     } catch (e) {

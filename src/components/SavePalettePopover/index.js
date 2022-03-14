@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import { Button, Popover, Radio } from "components"
+import { PaletteAccessRadio } from "components"
+import { Popover, Button } from 'elements'
 
 import './SavePalettePopover.css'
 
@@ -9,7 +10,7 @@ const SavePalettePopover = ({ handleSave, position = 'center', triggerText = 'sa
   useEffect(() => {
     setTitle(defaultTitle)
   }, [defaultTitle])
-  const handleChangeAccess = (access) => () => {
+  const handleChangeAccess = (access) => {
     setAccess(access)
   }
 
@@ -33,35 +34,12 @@ const SavePalettePopover = ({ handleSave, position = 'center', triggerText = 'sa
               }}
               defaultValue={defaultTitle}
             />
-            <div className={'save-palette-popover-title'}>
-              Who can use this palette?
-            </div>
-            <div className={'save-palette-popover-access-action'}>
-              <Radio
-                label={'Only me'}
-                checked={access === 'me'}
-                onChange={handleChangeAccess('me')}
-              />
-            </div>
-            <div className={'save-palette-popover-access-action'}>
-              <Radio
-                label={'Members of workspace'}
-                checked={access === 'workspace'}
-                onChange={handleChangeAccess('workspace')}
-              />
-            </div>
-            <div className={'save-palette-popover-access-action'}>
-              <Radio
-                label={'Members of company'}
-                checked={access === 'company'}
-                onChange={handleChangeAccess('company')}
-              />
-            </div>
+            <PaletteAccessRadio access={access} onChange={handleChangeAccess} />
             <Button
               size={'md'}
               disabled={!title.length}
               onClick={() => {
-                handleSave(title)
+                handleSave(title, access)
                 close()
               }}
             >
