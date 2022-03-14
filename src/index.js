@@ -21,7 +21,7 @@ const init = () => {
 
 ReactDOM.render(
   <React.StrictMode>
-    <AlertProvider template={Notification} position={positions.BOTTOM_CENTERm}>
+    <AlertProvider template={Notification} position={positions.BOTTOM_CENTER}>
       <App />
     </AlertProvider>
   </React.StrictMode>,
