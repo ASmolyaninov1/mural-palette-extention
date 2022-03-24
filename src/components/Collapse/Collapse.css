@@ -3,6 +3,7 @@
   justify-content: space-between;
   padding-top: 20px;
   padding-bottom: 23px;
+  border-bottom: 1px solid #F4F4F4;
   cursor: pointer;
 }
 

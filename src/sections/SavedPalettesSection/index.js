@@ -168,7 +168,7 @@ const SavedPalettesSection = () => {
             key={index}
             className={'saved-palettes-palette'}
             onClick={() => {
-              navigate(`coloring/${palette.objectId}`, {state: { backUrl: '/saved' }})
+              navigate(`coloring/${palette.objectId}`, { state: { backUrl: '/saved' }})
             }}
           >
             <div className={'saved-palettes-palette-title'}>{palette.title}</div>
