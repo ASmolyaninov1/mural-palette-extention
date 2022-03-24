@@ -1,19 +1,21 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { navigate } from '@reach/router'
 import { useAlert } from "react-alert"
 
 import { useApi } from "hooks"
 import { DeletePaletteModal, SavePaletteModal, MenuPopover } from "components"
 import { Icon } from 'elements'
+import { UserContext } from "contexts"
 
 import './SavedPalettesSection.css'
+import { userApi } from "../../api"
 
 const SavedPalettesSection = () => {
   const [palettesList, setPalettesList] = useState([])
   const [deletePaletteModalOpen, setDeletePaletteModalOpen] = useState(false)
-  const [renamePaletteModalOpen, setRenamePaletteModalOpen] = useState(false)
+  const [editPaletteModalOpen, setEditPaletteModalOpen] = useState(false)
   const [paletteIdToDelete, setPaletteIdToDelete] = useState(null)
-  const [paletteToRename, setPaletteToRename] = useState(null)
+  const [paletteToEdit, setPaletteToEdit] = useState(null)
   const alert = useAlert()
   const { loading, getAllPalettes, deletePalette, updatePalette } = useApi()
 
@@ -40,30 +42,30 @@ const SavedPalettesSection = () => {
     })
   }
 
-  const handleRenamePalette = (title, access) => {
-    if (!!paletteToRename) {
-      updatePalette(paletteToRename?.objectId, { title, access }).then(res => {
+  const handleEditPalette = (title, access) => {
+    if (!!paletteToEdit) {
+      updatePalette(paletteToEdit?.objectId, { title, access }).then(res => {
         if (res?.result === 'success') {
           const newPalettesList = [...palettesList]
-          const updatingPaletteIndex = palettesList.findIndex(palette => paletteToRename?.objectId === palette.objectId)
+          const updatingPaletteIndex = palettesList.findIndex(palette => paletteToEdit?.objectId === palette.objectId)
           newPalettesList[updatingPaletteIndex] = {...newPalettesList[updatingPaletteIndex], title}
 
           setPalettesList(newPalettesList)
-          setRenamePaletteModalOpen(false)
+          setEditPaletteModalOpen(false)
           alert.show('Palette updated')
         }
       })
     }
   }
 
-  const handleRenamePaletteModalOpen = (palette) => (closePopover) => {
-    setPaletteToRename(palette)
-    setRenamePaletteModalOpen(true)
+  const handleEditPaletteModalOpen = (palette) => (closePopover) => {
+    setPaletteToEdit(palette)
+    setEditPaletteModalOpen(true)
     closePopover()
   }
-  const handleRenamePaletteModalClose = () => {
-    setPaletteToRename(null)
-    setRenamePaletteModalOpen(false)
+  const handleEditPaletteModalClose = () => {
+    setPaletteToEdit(null)
+    setEditPaletteModalOpen(false)
   }
 
   const handleDeletePaletteModalOpen = (id) => (closePopover) => {
@@ -88,11 +90,11 @@ const SavedPalettesSection = () => {
         onDelete={handleDeletePalette}
       />
       <SavePaletteModal
-        open={renamePaletteModalOpen}
-        onClose={handleRenamePaletteModalClose}
-        onCancel={handleRenamePaletteModalClose}
-        onComplete={handleRenamePalette}
-        title={paletteToRename?.title || ''}
+        open={editPaletteModalOpen}
+        onClose={handleEditPaletteModalClose}
+        onCancel={handleEditPaletteModalClose}
+        onComplete={handleEditPalette}
+        defaultValues={paletteToEdit}
       />
       {palettesList.length === 0 && (
         <div>There are no saved palettes...</div>
@@ -121,7 +123,7 @@ const SavedPalettesSection = () => {
                 position={'left'}
                 trigger={<Icon name={'Dots'} />}
                 menu={[
-                  { title: 'Edit palette', onClick: handleRenamePaletteModalOpen(palette) },
+                  { title: 'Edit palette', onClick: handleEditPaletteModalOpen(palette) },
                   { title: 'Edit colors', onClick: handleEditColors(palette) },
                   { title: 'Delete palette', onClick: handleDeletePaletteModalOpen(palette.objectId) },
                 ]}

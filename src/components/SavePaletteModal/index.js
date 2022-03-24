@@ -4,20 +4,25 @@ import { Button } from 'elements'
 
 import './SavePaletteModal.css'
 
-const SavePaletteModal = ({ open, onClose, onCancel, onComplete, title: propsTitle = '' }) => {
-  const [title, setTitle] = useState('')
-  const [access, setAccess] = useState('me')
+const SavePaletteModal = props => {
+  const { open, onClose, onCancel, onComplete, defaultValues = { title: '', access: 'me' } } = props
+  const [palette, setPalette] = useState({ title: '', access: 'me' })
 
   useEffect(() => {
-    setTitle(propsTitle)
-  }, [propsTitle])
+    if (!!defaultValues) {
+      setPalette(defaultValues)
+    }
+  }, [defaultValues])
 
   const handleChangeTitle = (e) => {
     const value = e.target.value
-    setTitle(value)
+    setPalette({
+      ...palette,
+      title: value
+    })
   }
-  const handleComplete = () => onComplete(title, access)
-  const handleChangeAccess = (value) => setAccess(value)
+  const handleComplete = () => onComplete(palette.title, palette.access)
+  const handleChangeAccess = (access) => setPalette({ ...palette, access })
 
   return (
     <ModalWrapper open={open} onClose={onClose}>
@@ -27,9 +32,9 @@ const SavePaletteModal = ({ open, onClose, onCancel, onComplete, title: propsTit
           className={'save-palette-modal-input'}
           placeholder={'Type new title here'}
           onChange={handleChangeTitle}
-          value={title}
+          value={palette.title}
         />
-        <PaletteAccessRadio access={access} onChange={handleChangeAccess} />
+        <PaletteAccessRadio access={palette.access} onChange={handleChangeAccess} />
         <div className={'save-palette-modal-actions'}>
           <Button size={'md'} type={'secondary'} onClick={onCancel}>Cancel</Button>
           <Button size={'md'} onClick={handleComplete}>Save palette</Button>

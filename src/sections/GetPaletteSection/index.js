@@ -6,7 +6,7 @@ import { useAlert } from 'react-alert'
 import { useApi, useJoinImages } from "hooks"
 import { PaletteList, SavePalettePopover, TextAndFileInput } from "components"
 import { fromRGBToHex } from 'helpers'
-import PaletteContext from "PaletteContext"
+import { PaletteContext } from "contexts"
 
 import './GetPaletteSection.css'
 
@@ -124,15 +124,17 @@ const GetPaletteSection = () => {
         }}
         disabled={!brandUrl || loading}
       />
-      {!!brandPalette.length && !paletteId && (
-        <div
-          className={'get-palette-save-hint'}
-        >
-          Liked this palette? You can{' '}
-          <SavePalettePopover handleSave={handleCreatePalette} />{' '}
-          it.
-        </div>
-      )}
+      <div
+        className={'get-palette-save-hint'}
+      >
+        {!!brandPalette.length && !paletteId && (
+          <>
+            Liked this palette? You can{' '}
+            <SavePalettePopover handleSave={handleCreatePalette} />{' '}
+            it.
+          </>
+        )}
+      </div>
       <PaletteList paletteList={brandPalette} handleSelect={handleSelectColor} />
     </>
   )

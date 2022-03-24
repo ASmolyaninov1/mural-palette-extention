@@ -12,7 +12,7 @@ import {
 import { Icon, Popover, Checkbox } from 'elements'
 import { useApi } from 'hooks'
 import { copyToClipboard, capitalize } from 'helpers'
-import PaletteContext from 'PaletteContext'
+import { PaletteContext } from 'contexts'
 
 import './ColoringSection.css'
 
@@ -47,7 +47,7 @@ const ColoringSection = ({ id }) => {
       if (color) {
         setSelectedColor(color)
       } else {
-        setSelectedColor(palette.colors[0])
+        setSelectedColor(palette?.colors[0])
       }
     }
   }, [palette])
@@ -63,6 +63,7 @@ const ColoringSection = ({ id }) => {
   }
 
   const handleSavePalette = (title, access) => {
+    console.log(' === check === ')
     if (isUnsavedPalette) {
       createPalette({ title, colors: palette.colors, access }).then(res => {
         if (res?.result?.objectId) {
@@ -184,7 +185,7 @@ const ColoringSection = ({ id }) => {
         onClose={handleSavePaletteModalClose}
         onCancel={handleSavePaletteModalClose}
         onComplete={handleSavePalette}
-        title={palette?.title || ''}
+        defaultValues={palette}
       />
       <div className={'coloring-section-back'} onClick={() => navigate(backUrl || '/')}>
         <ArrowIcon />

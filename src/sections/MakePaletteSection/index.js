@@ -7,7 +7,7 @@ import { copyToClipboard } from "helpers"
 import { SavePalettePopover } from "components"
 import { Icon } from 'elements'
 import { useApi } from "hooks"
-import PaletteContext from "PaletteContext"
+import { PaletteContext } from "contexts"
 
 import './MakePaletteSection.css'
 

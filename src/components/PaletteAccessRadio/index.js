@@ -1,9 +1,14 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { Radio } from "elements"
+import { UserContext } from 'contexts'
 
 import './PaletteAccessRadio.css'
 
 const PaletteAccessRadio = ({ access, onChange }) => {
+  const user = useContext(UserContext)
+  if (!user) return null
+
+  const userMuralCompany = user.muralCompany
   return (
     <div>
       <div className={'palette-access-title'}>
@@ -23,13 +28,15 @@ const PaletteAccessRadio = ({ access, onChange }) => {
           onChange={() => onChange('workspace')}
         />
       </div>
-      <div className={'palette-access-action'}>
-        <Radio
-          label={'Members of company'}
-          checked={access === 'company'}
-          onChange={() => onChange('company')}
-        />
-      </div>
+      {!!userMuralCompany && (
+        <div className={'palette-access-action'}>
+          <Radio
+            label={'Members of company'}
+            checked={access === 'company'}
+            onChange={() => onChange('company')}
+          />
+        </div>
+      )}
     </div>
   )
 }
