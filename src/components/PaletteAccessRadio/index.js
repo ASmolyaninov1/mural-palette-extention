@@ -5,7 +5,7 @@ import { UserContext } from 'contexts'
 import './PaletteAccessRadio.css'
 
 const PaletteAccessRadio = ({ access, onChange }) => {
-  const user = useContext(UserContext)
+  const { user } = useContext(UserContext)
   if (!user) return null
 
   const userMuralCompany = user.muralCompany

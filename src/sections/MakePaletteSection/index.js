@@ -122,7 +122,7 @@ const MakePaletteSection = ({ id }) => {
             handleSave={handleSavePalette}
             position={'left'}
             triggerText={sectionMode === 'make' ? 'save' : 'Save changes'}
-            defaultTitle={palette.title}
+            defaultValues={palette}
           />
         )}
       </div>

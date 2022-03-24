@@ -1,3 +1,8 @@
+.saved-palettes-title {
+  margin-bottom: 20px;
+  font-weight: 700;
+}
+
 .saved-palettes-palette {
   position: relative;
   padding-bottom: 20px;
@@ -15,6 +20,7 @@
 .saved-palettes-palette-title {
   margin-bottom: 20px;
   font-weight: 600;
+  color: #888888;
 }
 
 .saved-palettes-palette-content {

@@ -1,0 +1,29 @@
+.collapse-header {
+  display: flex;
+  justify-content: space-between;
+  padding-top: 20px;
+  padding-bottom: 23px;
+  cursor: pointer;
+}
+
+.collapse-header:hover {
+  background: #FBFBFB;
+}
+
+.collapse-header-icon {
+  transform: rotate(90deg);
+  transition: transform ease-out 300ms;
+}
+
+.collapse-header[data-open="true"] .collapse-header-icon {
+  transform: rotate(-90deg);
+}
+
+.collapse-title {
+  font-weight: 700;
+}
+
+.collapse {
+  overflow: hidden;
+  transition: max-height ease-out 300ms;
+}

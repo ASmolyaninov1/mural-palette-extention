@@ -7,6 +7,7 @@ export { default as ModalWrapper } from './ModalWrapper'
 export { default as Notification } from './Notification'
 export { default as MenuPopover } from './MenuPopover'
 export { default as PaletteAccessRadio } from './PaletteAccessRadio'
+export { default as Collapse } from './Collapse'
 
 export { default as DeletePaletteModal } from './DeletePaletteModal'
 export { default as SavePaletteModal } from './SavePaletteModal'

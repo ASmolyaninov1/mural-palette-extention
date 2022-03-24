@@ -84,3 +84,12 @@ export const updatePalette = async (id, { colors, title, access }) => {
     return e
   }
 }
+
+export const updatePaletteAsDefault = async (id) => {
+  try {
+    const result = await axios.post(API_URL + '/parse/functions/setDefaultPalette', { id })
+    return result?.data?.result
+  } catch (e) {
+    return e
+  }
+}

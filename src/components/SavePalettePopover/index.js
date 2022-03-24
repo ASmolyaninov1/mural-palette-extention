@@ -4,14 +4,26 @@ import { Popover, Button } from 'elements'
 
 import './SavePalettePopover.css'
 
-const SavePalettePopover = ({ handleSave, position = 'center', triggerText = 'save', defaultTitle = '' }) => {
-  const [title, setTitle] = useState('')
-  const [access, setAccess] = useState('me')
+const SavePalettePopover = props => {
+  const [palette, setPalette] = useState({})
+
+  const { handleSave, position = 'center', triggerText = 'save', defaultValues = { title: '', access: 'me' } } = props
+
   useEffect(() => {
-    setTitle(defaultTitle)
-  }, [defaultTitle])
+    if (!!defaultValues) {
+      setPalette(defaultValues)
+    }
+  }, [defaultValues])
+
   const handleChangeAccess = (access) => {
-    setAccess(access)
+    setPalette({ ...palette, access })
+  }
+  const handleChangeTitle = (e) => {
+    const title = e.target.value
+    setPalette({ ...palette, title })
+  }
+  const handleConfirm = () => {
+    handleSave(palette.title, palette.access)
   }
 
   return (
@@ -23,23 +35,21 @@ const SavePalettePopover = ({ handleSave, position = 'center', triggerText = 'sa
             <input
               className={'save-palette-popover-input'}
               placeholder={'Type title here'}
-              onChange={(e) => {
-                setTitle(e.target.value)
-              }}
+              onChange={handleChangeTitle}
               onKeyDown={e => {
                 if (e.key === 'Enter') {
-                  handleSave(title)
+                  handleConfirm()
                   close()
                 }
               }}
-              defaultValue={defaultTitle}
+              defaultValue={palette.title}
             />
-            <PaletteAccessRadio access={access} onChange={handleChangeAccess} />
+            <PaletteAccessRadio access={palette.access} onChange={handleChangeAccess} />
             <Button
               size={'md'}
-              disabled={!title.length}
+              disabled={!palette?.title?.length}
               onClick={() => {
-                handleSave(title, access)
+                handleConfirm()
                 close()
               }}
             >

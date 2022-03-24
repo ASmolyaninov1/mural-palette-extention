@@ -40,7 +40,7 @@ function App() {
     <Location>
       <div className={'app'}>
         <Heading />
-        <UserContext.Provider value={user}>
+        <UserContext.Provider value={{ user, setUser }}>
           <PaletteContext.Provider value={{ cachedPalette, setCachedPalette }}>
             <Router>
               <SavedPalettesSection path={'/saved'} />

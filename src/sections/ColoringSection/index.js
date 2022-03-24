@@ -12,7 +12,7 @@ import {
 import { Icon, Popover, Checkbox } from 'elements'
 import { useApi } from 'hooks'
 import { copyToClipboard, capitalize } from 'helpers'
-import { PaletteContext } from 'contexts'
+import { PaletteContext, UserContext } from 'contexts'
 
 import './ColoringSection.css'
 
@@ -23,8 +23,9 @@ const ColoringSection = ({ id }) => {
   const [palette, setPalette] = useState(null)
   const location = useLocation()
   const alert = useAlert()
-  const { getPalette, deletePalette, updatePalette, createPalette } = useApi()
+  const { getPalette, deletePalette, updatePalette, createPalette, updatePaletteAsDefault } = useApi()
   const { cachedPalette, setCachedPalette } = useContext(PaletteContext)
+  const { user } = useContext(UserContext)
 
   const isUnsavedPalette = id === 'unsaved'
   const backUrl = location.state?.backUrl
@@ -114,8 +115,8 @@ const ColoringSection = ({ id }) => {
   }
 
   const handleSetAsDefaultPalette = (isDefault) => {
-    setPalette({ ...palette, isDefault })
-    updatePalette(palette.objectId, { isDefault }).then(res => {
+    setPalette({ ...palette })
+    updatePaletteAsDefault(isDefault ? palette.objectId : null).then(res => {
       if (res?.result === 'success') {
         alert.show('Palette updated')
       }
@@ -221,7 +222,7 @@ const ColoringSection = ({ id }) => {
             <div className={'coloring-section-title'}>State of palette</div>
             <div className={'coloring-section-action'}>
               <div>Set as default</div>
-              <Checkbox defaultValue={palette.isDefault} onChange={handleSetAsDefaultPalette} />
+              <Checkbox defaultValue={palette.objectId === user.defaultPaletteId} onChange={handleSetAsDefaultPalette} />
             </div>
           </div>
           <div className={'coloring-section-actions-list'}>

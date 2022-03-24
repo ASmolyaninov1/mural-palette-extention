@@ -1,8 +1,11 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { paletteApi } from "api"
+import { UserContext } from "contexts"
 
 const useApi = () => {
   const [loading, setLoading] = useState(false)
+  const { setUser } = useContext(UserContext)
+
   const getPdfScreenshot = async (b64pdf) => {
     setLoading(true)
     const result = await paletteApi.getPdfScreenshot(b64pdf)
@@ -52,6 +55,16 @@ const useApi = () => {
     return result
   }
 
+  const updatePaletteAsDefault = async (id) => {
+    setLoading(true)
+    const result = await paletteApi.updatePaletteAsDefault(id)
+    if (!!result?.result) {
+      setUser(result.result)
+      return { result: 'success' }
+    }
+    setLoading(false)
+  }
+
   return {
     getPdfScreenshot,
     getSiteScreenshot,
@@ -60,6 +73,7 @@ const useApi = () => {
     getAllPalettes,
     deletePalette,
     updatePalette,
+    updatePaletteAsDefault,
     loading
   }
 }
