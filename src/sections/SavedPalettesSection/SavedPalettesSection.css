@@ -1,20 +1,21 @@
 .saved-palettes-title {
-  margin-bottom: 20px;
+  margin-bottom: 4px;
   font-weight: 700;
+}
+
+.saved-palettes-section {
+  margin-bottom: 10px;
 }
 
 .saved-palettes-palette {
   position: relative;
+  padding-top: 20px;
   padding-bottom: 20px;
   border-bottom: 1px solid #f4f4f4;
   cursor: pointer;
 }
 .saved-palettes-palette:hover {
   background: #FBFBFB;
-}
-
-.saved-palettes-palette:not(:last-of-type) {
-  margin-bottom: 20px;
 }
 
 .saved-palettes-palette-title {

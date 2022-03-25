@@ -65,6 +65,16 @@ const useApi = () => {
     setLoading(false)
   }
 
+  const updateFavouritePalettes = async (id) => {
+    setLoading(true)
+    const result = await paletteApi.updateFavouritePalettes(id)
+    if (!!result?.result) {
+      setUser(result.result)
+      return { result: 'success' }
+    }
+    setLoading(false)
+  }
+
   return {
     getPdfScreenshot,
     getSiteScreenshot,
@@ -74,6 +84,7 @@ const useApi = () => {
     deletePalette,
     updatePalette,
     updatePaletteAsDefault,
+    updateFavouritePalettes,
     loading
   }
 }

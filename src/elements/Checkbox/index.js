@@ -4,14 +4,14 @@ import { uid } from 'helpers'
 
 import './Checkbox.css'
 
-const Checkbox = ({ defaultValue, onChange }) => {
+const Checkbox = ({ onChange, value }) => {
   const id = uid()
   return (
     <div className={'checkbox-wrapper'}>
       <input
         id={id}
         type={'checkbox'}
-        defaultChecked={defaultValue}
+        checked={value}
         onChange={(e) => onChange(e.target.checked)}
       />
       <label htmlFor={id} className={'checkbox'}>

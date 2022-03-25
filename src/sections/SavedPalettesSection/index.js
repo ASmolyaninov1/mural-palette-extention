@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useMemo, useState } from 'react'
 import { navigate } from '@reach/router'
 import { useAlert } from "react-alert"
 
@@ -8,6 +8,7 @@ import { Icon } from 'elements'
 import { UserContext } from "contexts"
 
 import './SavedPalettesSection.css'
+import { updateFavouritePalettes } from "../../api/palette"
 
 const SavedPalettesSection = () => {
   const [palettesList, setPalettesList] = useState([])
@@ -80,15 +81,15 @@ const SavedPalettesSection = () => {
   const handleEditColors = (palette) => () => {
     navigate(`make-palette/${palette.objectId}`, { state: { backUrl: '/saved' } })
   }
-  const handleSetAsDefault = (id) => () => {
+  const handleToggleDefaultPalette = (id) => () => {
     updatePaletteAsDefault(id).then(res => {
       if (res?.result === 'success') {
         alert.show('Palette updated')
       }
     })
   }
-  const handleStopUsingAsDefault = () => {
-    updatePaletteAsDefault(null).then(res => {
+  const handleToggleFavouritePalette = (id) => () => {
+    updateFavouritePalettes(id).then(res => {
       if (res?.result === 'success') {
         alert.show('Palette updated')
       }
@@ -96,17 +97,18 @@ const SavedPalettesSection = () => {
   }
 
   const renderMenuPopover = (palette) => {
+    const isDefaultPalette = palette.objectId === user.defaultPaletteId
+    const isFavouritePalette = (user.favouritePalettesIds || []).includes(palette.objectId)
+    const isCurrentUsersPalette = palette.muralUsername === user.muralUsername
+    if (!isCurrentUsersPalette) return null
+
     let menu = [
+      { title: isDefaultPalette ? 'Stop using as default' : 'Set as default', onClick: handleToggleDefaultPalette },
+      { title: isFavouritePalette ? 'Delete from favourites' : 'Add to favourites', onClick: handleToggleFavouritePalette },
       { title: 'Edit palette', onClick: handleEditPaletteModalOpen(palette) },
       { title: 'Edit colors', onClick: handleEditColors(palette) },
       { title: 'Delete palette', onClick: handleDeletePaletteModalOpen(palette.objectId) },
     ]
-
-    if (palette.objectId === user.defaultPaletteId) {
-      menu = [{ title: 'Stop using as default', onClick: handleStopUsingAsDefault }, ...menu]
-    } else {
-      menu = [{ title: 'Set as default', onClick: handleSetAsDefault(palette.objectId) }, ...menu]
-    }
 
     return (
       <MenuPopover
@@ -117,8 +119,41 @@ const SavedPalettesSection = () => {
     )
   }
 
-  const defaultPalette = palettesList.find(palette => palette.objectId === user.defaultPaletteId)
-  const otherPalettes = palettesList.filter(palette => palette.objectId !== user.defaultPaletteId)
+  const renderPalette = (palette) => {
+    return (
+      <div
+        key={palette.objectId}
+        className={'saved-palettes-palette'}
+        onClick={() => {
+          navigate(`coloring/${palette.objectId}`, { state: { backUrl: '/saved' }})
+        }}
+      >
+        <div className={'saved-palettes-palette-title'}>{palette.title}</div>
+        <div className={'saved-palettes-palette-content'}>
+          {palette.colors.map(color => {
+            return (
+              <div
+                key={color + palette.objectId}
+                className={'saved-palettes-palette-content-color'}
+                style={{ background: color }}
+              />
+            )
+          })}
+          {renderMenuPopover(palette)}
+        </div>
+      </div>
+    )
+  }
+
+  const { defaultPalette, favouritePalettes, otherPalettes } = useMemo(() => (
+    palettesList.reduce((acc, palette) => {
+      const isDefaultPalette = palette.objectId === user.defaultPaletteId
+      const isFavouritePalette = (user.favouritePalettesIds || []).includes(palette.objectId)
+      if (isDefaultPalette) return {...acc, defaultPalette: palette}
+      if (isFavouritePalette) return { ...acc, favouritePalettes: [...acc.favouritePalettes, palette] }
+      return { ...acc, otherPalettes: [...acc.otherPalettes, palette] }
+    }, { defaultPalette: null, favouritePalettes: [], otherPalettes: [] })
+  ))
   return (
     <div>
       <DeletePaletteModal
@@ -138,55 +173,22 @@ const SavedPalettesSection = () => {
         <div>There are no saved palettes...</div>
       )}
       {!!defaultPalette && (
-        <>
+        <div className={'saved-palettes-section'}>
           <div className={'saved-palettes-title'}>Default palette</div>
-          <div
-            className={'saved-palettes-palette'}
-            onClick={() => {
-              navigate(`coloring/${defaultPalette.objectId}`, {state: { backUrl: '/saved' }})
-            }}
-          >
-            <div className={'saved-palettes-palette-title'}>{defaultPalette.title}</div>
-            <div className={'saved-palettes-palette-content'}>
-              {defaultPalette.colors.map(color => {
-                return (
-                  <div
-                    key={color + Math.random()}
-                    className={'saved-palettes-palette-content-color'}
-                    style={{ background: color }}
-                  />
-                )
-              })}
-              {renderMenuPopover(defaultPalette)}
-            </div>
-          </div>
-        </>
+          {renderPalette(defaultPalette)}
+        </div>
       )}
-      {otherPalettes.map((palette, index) => {
-        return (
-          <div
-            key={index}
-            className={'saved-palettes-palette'}
-            onClick={() => {
-              navigate(`coloring/${palette.objectId}`, { state: { backUrl: '/saved' }})
-            }}
-          >
-            <div className={'saved-palettes-palette-title'}>{palette.title}</div>
-            <div className={'saved-palettes-palette-content'}>
-              {palette.colors.map(color => {
-                return (
-                  <div
-                    key={color + Math.random()}
-                    className={'saved-palettes-palette-content-color'}
-                    style={{ background: color }}
-                  />
-                )
-              })}
-              {renderMenuPopover(palette)}
-            </div>
-          </div>
-        )
-      })}
+      <div className={'saved-palettes-section'}>
+        <Collapse title={'Favourite palettes'}>
+          {favouritePalettes.map(renderPalette)}
+        </Collapse>
+      </div>
+      {!!otherPalettes.length && (
+        <div className={'saved-palettes-section'}>
+          <div className={'saved-palettes-title'}>Other palettes</div>
+          {otherPalettes.map(renderPalette)}
+        </div>
+      )}
     </div>
   )
 }

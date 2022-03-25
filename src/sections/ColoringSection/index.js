@@ -23,12 +23,21 @@ const ColoringSection = ({ id }) => {
   const [palette, setPalette] = useState(null)
   const location = useLocation()
   const alert = useAlert()
-  const { getPalette, deletePalette, updatePalette, createPalette, updatePaletteAsDefault } = useApi()
+  const {
+    getPalette,
+    deletePalette,
+    updatePalette,
+    createPalette,
+    updatePaletteAsDefault,
+    updateFavouritePalettes
+  } = useApi()
   const { cachedPalette, setCachedPalette } = useContext(PaletteContext)
   const { user } = useContext(UserContext)
 
   const isUnsavedPalette = id === 'unsaved'
   const backUrl = location.state?.backUrl
+  const isDefaultPalette = id === user.defaultPaletteId
+  const isFavouritePalette = (user.favouritePalettesIds || []).includes(id)
 
   useEffect(() => {
     setPalette(null)
@@ -54,7 +63,7 @@ const ColoringSection = ({ id }) => {
   }, [palette])
 
   const handleDeletePalette = () => {
-    deletePalette(palette.objectId).then((res) => {
+    deletePalette(id).then((res) => {
       if (res?.result === 'success') {
         setDeletePaletteModalOpen(false)
         alert.show('Palette deleted')
@@ -64,7 +73,6 @@ const ColoringSection = ({ id }) => {
   }
 
   const handleSavePalette = (title, access) => {
-    console.log(' === check === ')
     if (isUnsavedPalette) {
       createPalette({ title, colors: palette.colors, access }).then(res => {
         if (res?.result?.objectId) {
@@ -76,7 +84,7 @@ const ColoringSection = ({ id }) => {
         }
       })
     } else {
-      updatePalette(palette.objectId, { title, access }).then(res => {
+      updatePalette(id, { title, access }).then(res => {
         if (res?.result === 'success') {
           setPalette({
             ...palette,
@@ -110,22 +118,13 @@ const ColoringSection = ({ id }) => {
     if (isUnsavedPalette) {
       navigate(`/make-palette/unsaved`, { state: { backUrl: '/coloring/unsaved' } })
     } else {
-      navigate(`/make-palette/${palette.objectId}`, { state: { backUrl: `/coloring/${palette.objectId}` } })
+      navigate(`/make-palette/${id}`, { state: { backUrl: `/coloring/${id}` } })
     }
-  }
-
-  const handleSetAsDefaultPalette = (isDefault) => {
-    setPalette({ ...palette })
-    updatePaletteAsDefault(isDefault ? palette.objectId : null).then(res => {
-      if (res?.result === 'success') {
-        alert.show('Palette updated')
-      }
-    })
   }
 
   const handleUpdateAccess = (access, closePopover) => {
     setPalette({ ...palette, access })
-    updatePalette(palette.objectId, { access }).then(res => {
+    updatePalette(id, { access }).then(res => {
       if (res?.result === 'success') {
         alert.show('Palette updated')
       }
@@ -133,8 +132,27 @@ const ColoringSection = ({ id }) => {
     })
   }
 
+
+  const handleToggleFavouritePalette = () => {
+    updateFavouritePalettes(id).then(res => {
+      if (res?.result === 'success') {
+        alert.show('Updated')
+      }
+    })
+  }
+
+  const handleToggleDefaultPalette = () => {
+    updatePaletteAsDefault(id).then(res => {
+      if (res?.result === 'success') {
+        alert.show('Palette updated')
+      }
+    })
+  }
+
   const renderMenuPopover = () => {
-    const savedPaletteMenu = [
+    let savedPaletteMenu = [
+      { title: isDefaultPalette ? 'Stop using as default' : 'Set as default', onClick: handleToggleDefaultPalette },
+      { title: isFavouritePalette ? 'Delete from favourites' : 'Add to favourites', onClick: handleToggleFavouritePalette },
       { title: 'Edit palette', onClick: handleSavePaletteModalOpen },
       { title: 'Edit colors', onClick: handleEditColors },
       { title: 'Delete palette', onClick: handleDeletePaletteModalOpen },
@@ -222,7 +240,17 @@ const ColoringSection = ({ id }) => {
             <div className={'coloring-section-title'}>State of palette</div>
             <div className={'coloring-section-action'}>
               <div>Set as default</div>
-              <Checkbox defaultValue={palette.objectId === user.defaultPaletteId} onChange={handleSetAsDefaultPalette} />
+              <Checkbox
+                value={isDefaultPalette}
+                onChange={handleToggleDefaultPalette}
+              />
+            </div>
+            <div className={'coloring-section-action'}>
+              <div>Add to favourites</div>
+              <Checkbox
+                value={isFavouritePalette}
+                onChange={handleToggleFavouritePalette}
+              />
             </div>
           </div>
           <div className={'coloring-section-actions-list'}>

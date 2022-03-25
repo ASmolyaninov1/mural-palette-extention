@@ -93,3 +93,12 @@ export const updatePaletteAsDefault = async (id) => {
     return e
   }
 }
+
+export const updateFavouritePalettes = async (id) => {
+  try {
+    const result = await axios.post(API_URL + '/parse/functions/updateUserFavouritePalettes', { id })
+    return result?.data?.result
+  } catch (e) {
+    return e
+  }
+}
