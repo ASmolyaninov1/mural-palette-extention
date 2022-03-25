@@ -95,8 +95,6 @@ const SavedPalettesSection = () => {
     })
   }
 
-  console.log('user => ', user)
-
   const renderMenuPopover = (palette) => {
     const isDefaultPalette = palette.objectId === user.defaultPaletteId
     const isFavouritePalette = (user.favouritePalettesIds || []).includes(palette.objectId)
@@ -186,7 +184,7 @@ const SavedPalettesSection = () => {
         </div>
       )}
       <div className={'saved-palettes-section'}>
-        <Collapse title={'Favourite palettes'}>
+        <Collapse title={'Favourite palettes'} defaultShow={!otherPalettes.length}>
           {favouritePalettes.map(renderPalette)}
         </Collapse>
       </div>

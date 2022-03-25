@@ -1,14 +1,18 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useMeasure } from 'react-use'
 import { Icon } from "elements"
 
 import './Collapse.css'
 
 const Collapse = props => {
-  const { children, title, ...rest } = props
+  const { children, title, defaultShow = false, ...rest } = props
   const [show, setShow] = useState(false)
   const [isOverflowHidden, setIsOverflowHidden] = useState(true)
   const [ref, { height }] = useMeasure()
+
+  useEffect(() => {
+    setShow(defaultShow)
+  }, [defaultShow])
 
   const toggleCollapse = () => {
     if (!show) {
