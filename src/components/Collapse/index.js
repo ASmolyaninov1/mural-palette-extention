@@ -6,12 +6,22 @@ import './Collapse.css'
 
 const Collapse = props => {
   const { children, title, ...rest } = props
-  const [show, setShow] = useState()
+  const [show, setShow] = useState(false)
+  const [isOverflowHidden, setIsOverflowHidden] = useState(true)
   const [ref, { height }] = useMeasure()
 
   const toggleCollapse = () => {
+    if (!show) {
+      setTimeout(() => {
+        setIsOverflowHidden(false)
+      }, 300)
+    } else {
+      setIsOverflowHidden(true)
+    }
     setShow(!show)
   }
+
+  const collapseClassName = 'collapse ' + (isOverflowHidden && 'collapse-hidden')
   return (
     <div className={'collapse-wrapper'}>
       <div className={'collapse-header'} data-open={show} onClick={toggleCollapse}>
@@ -19,7 +29,8 @@ const Collapse = props => {
         <Icon name={'Arrow'} className={'collapse-header-icon'} />
       </div>
       <div
-        className={'collapse'}
+        className={collapseClassName}
+        data-show={show}
         style={{ maxHeight: show ? height : '0px' }}
         {...rest}
       >

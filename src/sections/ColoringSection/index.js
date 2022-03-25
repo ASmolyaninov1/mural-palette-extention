@@ -133,17 +133,19 @@ const ColoringSection = ({ id }) => {
   }
 
 
-  const handleToggleFavouritePalette = () => {
+  const handleToggleFavouritePalette = (closePopover) => {
     updateFavouritePalettes(id).then(res => {
       if (res?.result === 'success') {
+        closePopover()
         alert.show('Updated')
       }
     })
   }
 
-  const handleToggleDefaultPalette = () => {
+  const handleToggleDefaultPalette = (closePopover) => {
     updatePaletteAsDefault(id).then(res => {
       if (res?.result === 'success') {
+        closePopover()
         alert.show('Palette updated')
       }
     })

@@ -8,7 +8,6 @@ import { Icon } from 'elements'
 import { UserContext } from "contexts"
 
 import './SavedPalettesSection.css'
-import { updateFavouritePalettes } from "../../api/palette"
 
 const SavedPalettesSection = () => {
   const [palettesList, setPalettesList] = useState([])
@@ -17,7 +16,7 @@ const SavedPalettesSection = () => {
   const [paletteIdToDelete, setPaletteIdToDelete] = useState(null)
   const [paletteToEdit, setPaletteToEdit] = useState(null)
   const alert = useAlert()
-  const { loading, getAllPalettes, deletePalette, updatePalette, updatePaletteAsDefault } = useApi()
+  const { loading, getAllPalettes, deletePalette, updatePalette, updatePaletteAsDefault, updateFavouritePalettes } = useApi()
   const { user } = useContext(UserContext)
 
   useEffect(() => {
@@ -96,6 +95,8 @@ const SavedPalettesSection = () => {
     })
   }
 
+  console.log('user => ', user)
+
   const renderMenuPopover = (palette) => {
     const isDefaultPalette = palette.objectId === user.defaultPaletteId
     const isFavouritePalette = (user.favouritePalettesIds || []).includes(palette.objectId)
@@ -103,8 +104,14 @@ const SavedPalettesSection = () => {
     if (!isCurrentUsersPalette) return null
 
     let menu = [
-      { title: isDefaultPalette ? 'Stop using as default' : 'Set as default', onClick: handleToggleDefaultPalette },
-      { title: isFavouritePalette ? 'Delete from favourites' : 'Add to favourites', onClick: handleToggleFavouritePalette },
+      {
+        title: isDefaultPalette ? 'Stop using as default' : 'Set as default',
+        onClick: handleToggleDefaultPalette(palette.objectId)
+      },
+      {
+        title: isFavouritePalette ? 'Delete from favourites' : 'Add to favourites',
+        onClick: handleToggleFavouritePalette(palette.objectId)
+      },
       { title: 'Edit palette', onClick: handleEditPaletteModalOpen(palette) },
       { title: 'Edit colors', onClick: handleEditColors(palette) },
       { title: 'Delete palette', onClick: handleDeletePaletteModalOpen(palette.objectId) },
@@ -153,7 +160,7 @@ const SavedPalettesSection = () => {
       if (isFavouritePalette) return { ...acc, favouritePalettes: [...acc.favouritePalettes, palette] }
       return { ...acc, otherPalettes: [...acc.otherPalettes, palette] }
     }, { defaultPalette: null, favouritePalettes: [], otherPalettes: [] })
-  ))
+  ), [user, palettesList])
   return (
     <div>
       <DeletePaletteModal

@@ -25,6 +25,9 @@
 }
 
 .collapse {
-  overflow: hidden;
   transition: max-height ease-out 300ms;
+}
+
+.collapse-hidden {
+  overflow: hidden;
 }
