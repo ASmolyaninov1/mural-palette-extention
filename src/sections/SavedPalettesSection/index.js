@@ -150,14 +150,17 @@ const SavedPalettesSection = () => {
     )
   }
 
-  const { defaultPalette, favouritePalettes, otherPalettes } = useMemo(() => (
+  const { defaultPalette, favouritePalettes, accessedPalettes, otherPalettes } = useMemo(() => (
     palettesList.reduce((acc, palette) => {
       const isDefaultPalette = palette.objectId === user.defaultPaletteId
       const isFavouritePalette = (user.favouritePalettesIds || []).includes(palette.objectId)
+      const isAccessedPalette = palette.muralUsername !== user.muralUsername
+
       if (isDefaultPalette) return {...acc, defaultPalette: palette}
       if (isFavouritePalette) return { ...acc, favouritePalettes: [...acc.favouritePalettes, palette] }
+      if (isAccessedPalette) return { ...acc, accessedPalettes: [...acc.accessedPalettes, palette] }
       return { ...acc, otherPalettes: [...acc.otherPalettes, palette] }
-    }, { defaultPalette: null, favouritePalettes: [], otherPalettes: [] })
+    }, { defaultPalette: null, favouritePalettes: [], accessedPalettes: [], otherPalettes: [] })
   ), [user, palettesList])
   return (
     <div>
@@ -183,11 +186,20 @@ const SavedPalettesSection = () => {
           {renderPalette(defaultPalette)}
         </div>
       )}
-      <div className={'saved-palettes-section'}>
-        <Collapse title={'Favourite palettes'} defaultShow={!otherPalettes.length}>
-          {favouritePalettes.map(renderPalette)}
-        </Collapse>
-      </div>
+      {!!favouritePalettes.length && (
+        <div className={'saved-palettes-section'}>
+          <Collapse title={'Favourite palettes'} defaultShow={!otherPalettes.length}>
+            {favouritePalettes.map(renderPalette)}
+          </Collapse>
+        </div>
+      )}
+      {!!accessedPalettes.length && (
+        <div className={'saved-palettes-section'}>
+          <Collapse title={'Accessed palettes'}>
+            {accessedPalettes.map(renderPalette)}
+          </Collapse>
+        </div>
+      )}
       {!!otherPalettes.length && (
         <div className={'saved-palettes-section'}>
           <div className={'saved-palettes-title'}>Other palettes</div>

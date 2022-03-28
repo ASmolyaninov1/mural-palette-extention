@@ -55,3 +55,13 @@
 .coloring-section-action-access-btn:active {
   color: #AC1D3F;
 }
+
+.coloring-section-footer-text {
+  margin-bottom: 22px;
+  color: #888888;
+}
+
+.coloring-section-footer-action {
+  width: 100%;
+  text-align: right;
+}

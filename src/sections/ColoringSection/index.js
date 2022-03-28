@@ -9,7 +9,7 @@ import {
   SavePaletteModal,
   PaletteAccessRadio
 } from "components"
-import { Icon, Popover, Checkbox } from 'elements'
+import { Icon, Popover, Checkbox, Button } from 'elements'
 import { useApi } from 'hooks'
 import { copyToClipboard, capitalize } from 'helpers'
 import { PaletteContext, UserContext } from 'contexts'
@@ -36,13 +36,14 @@ const ColoringSection = ({ id }) => {
 
   const isUnsavedPalette = id === 'unsaved'
   const backUrl = location.state?.backUrl
+  const isCurrentUserPalette = id !== 'unsaved' && user?.muralUsername === palette?.muralUsername
   const isDefaultPalette = id === user.defaultPaletteId
   const isFavouritePalette = (user.favouritePalettesIds || []).includes(id)
 
   useEffect(() => {
     setPalette(null)
     if (isUnsavedPalette) {
-      setPalette(cachedPalette)
+      setPalette({ ...cachedPalette, access: 'me' })
     } else {
       getPalette(id).then(res => {
         if (!res.result) navigate(backUrl || '/')
@@ -100,7 +101,7 @@ const ColoringSection = ({ id }) => {
 
   const handleSavePaletteModalOpen = (closePopover) => {
     setSavePaletteModalOpen(true)
-    closePopover()
+    closePopover && closePopover()
   }
   const handleSavePaletteModalClose = () => {
     setSavePaletteModalOpen(false)
@@ -152,6 +153,8 @@ const ColoringSection = ({ id }) => {
   }
 
   const renderMenuPopover = () => {
+    if (!isUnsavedPalette && !isCurrentUserPalette) return null
+
     let savedPaletteMenu = [
       { title: isDefaultPalette ? 'Stop using as default' : 'Set as default', onClick: handleToggleDefaultPalette },
       { title: isFavouritePalette ? 'Delete from favourites' : 'Add to favourites', onClick: handleToggleFavouritePalette },
@@ -187,6 +190,14 @@ const ColoringSection = ({ id }) => {
     if (selectedWidgetsList.length) {
       selectedWidgetsList.forEach(selectedWidget => {
         window.muralSdk.widgets.set.background.color(selectedWidget.id, selectedColor)
+      })
+    }
+  }
+  const handlePaintWidgetText = async () => {
+    const selectedWidgetsList = await window.muralSdk.selectionSdk.list()
+    if (selectedWidgetsList.length) {
+      selectedWidgetsList.forEach(selectedWidget => {
+        window.muralSdk.widgets.set.text.color(selectedWidget.id, selectedColor)
       })
     }
   }
@@ -235,8 +246,12 @@ const ColoringSection = ({ id }) => {
           <div>Border</div>
           <Icon name={'Plus'} onClick={handlePaintWidgetBorder} />
         </div>
+        <div className={'coloring-section-action'}>
+          <div>Text</div>
+          <Icon name={'Plus'} onClick={handlePaintWidgetText} />
+        </div>
       </div>
-      {!isUnsavedPalette && (
+      {!isUnsavedPalette && isCurrentUserPalette && (
         <>
           <div className={'coloring-section-actions-list'}>
             <div className={'coloring-section-title'}>State of palette</div>
@@ -263,6 +278,18 @@ const ColoringSection = ({ id }) => {
                 {(close) => <PaletteAccessRadio access={palette.access} onChange={(access) => handleUpdateAccess(access, close)} />}
               </Popover>
             </div>
+          </div>
+        </>
+      )}
+      {isUnsavedPalette && (
+        <>
+          <div className={'coloring-section-footer-text'}>
+            This palette is unsaved. You will lose it after getting palette from another URL or image. You may save this palette to prevent this.
+          </div>
+          <div className={'coloring-section-footer-action'}>
+            <Button onClick={() => handleSavePaletteModalOpen()} type={'secondary'} size={'md'}>
+              Save palette
+            </Button>
           </div>
         </>
       )}

@@ -92,6 +92,7 @@ const GetPaletteSection = () => {
       baseImage.onload = catchColor
     })
   }
+
   const handleGetPaletteClick = () => {
     if (file) {
       getPaletteByFile()

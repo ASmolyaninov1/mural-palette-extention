@@ -12,6 +12,7 @@ const Collapse = props => {
 
   useEffect(() => {
     setShow(defaultShow)
+    setIsOverflowHidden(!defaultShow)
   }, [defaultShow])
 
   const toggleCollapse = () => {

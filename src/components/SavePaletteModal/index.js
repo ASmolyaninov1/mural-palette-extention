@@ -5,7 +5,7 @@ import { Button } from 'elements'
 import './SavePaletteModal.css'
 
 const SavePaletteModal = props => {
-  const { open, onClose, onCancel, onComplete, defaultValues = { title: '', access: 'me' } } = props
+  const { open, onClose, onCancel, onComplete, defaultValues } = props
   const [palette, setPalette] = useState({ title: '', access: 'me' })
 
   useEffect(() => {

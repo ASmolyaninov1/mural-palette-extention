@@ -5,9 +5,9 @@ import { Popover, Button } from 'elements'
 import './SavePalettePopover.css'
 
 const SavePalettePopover = props => {
-  const [palette, setPalette] = useState({})
+  const [palette, setPalette] = useState({ access: 'me', title: '' })
 
-  const { handleSave, position = 'center', triggerText = 'save', defaultValues = { title: '', access: 'me' } } = props
+  const { handleSave, position = 'center', triggerText = 'save', defaultValues } = props
 
   useEffect(() => {
     if (!!defaultValues) {
