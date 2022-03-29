@@ -115,13 +115,17 @@ const GetPaletteSection = () => {
   return (
     <>
       <TextAndFileInput
-        fileInputProps={{ onChange: handleSetFile, onRemoveFile: handleRemoveFile }}
+        fileInputProps={{
+          onChange: handleSetFile,
+          onRemoveFile: handleRemoveFile,
+          accept: '.jpg, .jpeg, .png, .pdf'
+        }}
         textInputProps={{ onChange: handleInputChange, onKeyDown: handleInputKeyDown, defaultValue: brandUrl }}
         file={file}
         buttonProps={{
           loading: loading,
           onClick: handleGetPaletteClick,
-          text: 'Get palette'
+          text: 'Get palette',
         }}
         disabled={!brandUrl || loading}
       />
